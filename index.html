@@ -609,7 +609,8 @@
                         });
                     });
                     
-                    const pct = totalQ > 0 ? Math.round((completedQ / totalQ) * 100) : 0;
+                    const completedPct = totalQ > 0 ? Math.round((completedQ / totalQ) * 100) : 0;
+                    const attemptedPct = totalQ > 0 ? Math.round((attemptedQ / totalQ) * 100) : 0;
 
                     const card = document.createElement('div');
                     card.className = 'glass p-6 rounded-2xl border border-slate-200 dark:border-slate-800 card-shadow hover:scale-[1.02] transition cursor-pointer relative group';
@@ -630,10 +631,13 @@
                         <div class="space-y-2">
                             <div class="flex justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                                 <span>Completed</span>
-                                <span>${pct}%</span>
+                                <span>${completedPct}%</span>
                             </div>
-                            <div class="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                <div class="h-full bg-blue-50" style="width: ${pct}%"></div>
+                            <div class="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden relative">
+                                <!-- Attempted Layer (Light Blue) -->
+                                <div class="absolute h-full bg-blue-400/40 dark:bg-blue-500/20 transition-all duration-500" style="width: ${attemptedPct}%"></div>
+                                <!-- Submitted Layer (Vibrant Blue) -->
+                                <div class="absolute h-full bg-blue-600 dark:bg-blue-500 transition-all duration-500 shadow-[0_0_8px_rgba(37,99,235,0.3)]" style="width: ${completedPct}%"></div>
                             </div>
                             <div class="flex justify-between items-center text-[10px] text-slate-400 dark:text-slate-500 mt-1 font-medium uppercase tracking-tight">
                                 <span>${completedQ}/${totalQ} Submitted • ${attemptedQ} Attempted</span>
@@ -705,7 +709,6 @@ Double-check for OCR mistakes before finalizing.
 
 If uncertain about any answer, mark it as null instead of guessing.`;
 
-            // Use hidden textarea for execCommand('copy') to bypass potential iframe clipboard issues
             const textArea = document.createElement("textarea");
             textArea.value = promptText;
             textArea.style.position = "fixed";
