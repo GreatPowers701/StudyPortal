@@ -739,7 +739,7 @@
                 const countEl = document.getElementById('test-count');
                 container.innerHTML = '';
                 
-                const ids = Object.keys(library);
+                const ids = Object.keys(library).sort((a, b) => library[a].title.localeCompare(library[b].title));
                 countEl.innerText = ids.length;
 
                 if (ids.length === 0) {
