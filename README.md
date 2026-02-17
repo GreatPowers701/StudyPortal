@@ -49,7 +49,7 @@ A modern, feature-rich web application designed to help students manage practice
     ```
 
 3.  **Open the App:**
-    Navigate to `http://localhost:8000/checker%20gemini.html` (or the specific file name you are using) in your browser.
+    Navigate to `http://localhost:8000/index.html` (or the specific file name you are using) in your browser.
 
 ## 🛠️ Configuration
 
@@ -69,7 +69,7 @@ To enable Google Tasks integration:
 
 ## 📂 Project Structure
 
-*   `checker gemini.html`: The main application file containing HTML, CSS (Tailwind), and JavaScript logic.
+*   `index.html`: The main application file containing HTML, CSS (Tailwind), and JavaScript logic.
 *   `assets/`: (Create this folder if you have static assets like images or custom icons).
 
 ## 🤝 Contributing
