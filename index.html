@@ -74,10 +74,17 @@
             <section class="glass p-8 rounded-2xl border border-slate-200 dark:border-slate-800 card-shadow text-center">
                 <h2 class="text-lg font-semibold mb-2 dark:text-white">Add New Test</h2>
                 <p class="text-slate-500 dark:text-slate-400 text-sm mb-6">Upload a JSON answer key to create a new practice session.</p>
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
                     <input type="text" id="newTestTitle" placeholder="Test Title (e.g. Physics Mock 1)" class="w-full sm:w-64 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
                     <input type="file" id="newTestFile" accept=".json" class="hidden">
                     <button onclick="document.getElementById('newTestFile').click()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">Upload JSON</button>
+                </div>
+                <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <p class="text-xs text-slate-400 mb-3 uppercase tracking-widest font-bold">Need to extract answers from images?</p>
+                    <button onclick="copyExtractionPrompt()" class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-lg font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center gap-2 mx-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
+                        Copy Extraction Prompt
+                    </button>
                 </div>
             </section>
 
@@ -626,7 +633,7 @@
                                 <span>${pct}%</span>
                             </div>
                             <div class="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                <div class="h-full bg-blue-500" style="width: ${pct}%"></div>
+                                <div class="h-full bg-blue-50" style="width: ${pct}%"></div>
                             </div>
                             <div class="flex justify-between items-center text-[10px] text-slate-400 dark:text-slate-500 mt-1 font-medium uppercase tracking-tight">
                                 <span>${completedQ}/${totalQ} Submitted • ${attemptedQ} Attempted</span>
@@ -647,6 +654,84 @@
                 saveAndSync();
                 renderLibrary();
             }
+        }
+
+        function copyExtractionPrompt() {
+            const promptText = `You are extracting an answer key from screenshots of a test.
+Carefully read the uploaded image(s) and convert the answers into a JSON object that matches EXACTLY the following schema:
+{
+"Section Name": {
+"type": "single | multi | numerical",
+"answers": [...]
+}
+}
+Rules:
+
+Detect section headers (e.g., "SECTION (B): MULTIPLE CHOICE QUESTIONS (MULTIPLE OPTIONS CORRECT)", "SECTION (C): ASSERTION-REASONING", etc.).
+Use the section title as the JSON key (keep it short like "Section B", "Section C", etc.).
+Determine question type:
+If multiple options like "A, B, D" → type = "multi"
+If single letter like "A" → type = "single"
+If numbers or decimals → type = "numerical"
+Preserve answer order strictly by question number.
+For multi answers:
+Remove spaces
+Combine letters into a string (e.g., "ABD", "ACD").
+For single answers:
+Use a single letter string (e.g., "A").
+For numerical answers:
+Use numbers or decimal values exactly as shown.
+Ignore formatting artifacts like dots, alignment marks, or page decorations.
+Do NOT add explanations.
+Output ONLY valid JSON — no markdown, no commentary.
+Example format:
+{
+"Section B": {
+"type": "multi",
+"answers": ["AD", "BD", "ACD"]
+},
+"Section C": {
+"type": "single",
+"answers": ["C", "A", "B"]
+},
+"Section E": {
+"type": "numerical",
+"answers": [4, 6, 3]
+}
+}
+Now extract the answers from the uploaded screenshot(s).
+
+Double-check for OCR mistakes before finalizing.
+
+If uncertain about any answer, mark it as null instead of guessing.`;
+
+            // Use hidden textarea for execCommand('copy') to bypass potential iframe clipboard issues
+            const textArea = document.createElement("textarea");
+            textArea.value = promptText;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            textArea.style.top = "0";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                const indicator = document.getElementById('autosave-indicator');
+                if (indicator) {
+                    const originalText = indicator.innerText;
+                    indicator.innerText = 'Prompt Copied! ✓';
+                    indicator.style.opacity = '1';
+                    setTimeout(() => {
+                        indicator.style.opacity = '0';
+                        setTimeout(() => indicator.innerText = originalText, 300);
+                    }, 2000);
+                }
+            } catch (err) {
+                console.error('Copy failed', err);
+            }
+            
+            document.body.removeChild(textArea);
         }
 
         // --- Rendering Workspace ---
