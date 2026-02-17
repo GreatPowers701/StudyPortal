@@ -33,191 +33,277 @@
             }
         }
     </script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    <style type="text/tailwindcss">
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Outfit', sans-serif;
+            background-attachment: fixed;
         }
 
-        /* Softer "glass" for dark mode */
+        /* Modern Glassmorphism */
         .glass {
-            @apply bg-white/95 dark:bg-slate-800/90 backdrop-blur-md;
+            @apply bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-lg;
+        }
+
+        .glass-hover {
+            @apply hover:bg-white/80 dark:hover:bg-slate-900/80 transition duration-300;
         }
 
         .card-shadow {
-            box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
         }
 
-        /* Subtle, lighter scrollbars in dark mode */
-        .custom-scrollbar::-webkit-scrollbar {
+        /* Input & Button Base Styles */
+        .glass-input {
+            @apply bg-white/50 dark:bg-black/20 border border-slate-200/60 dark:border-white/10 backdrop-blur-sm focus:bg-white/80 dark:focus:bg-black/40 transition-all duration-300;
+        }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
 
-        .custom-scrollbar::-webkit-scrollbar-track {
-            @apply bg-slate-100 dark:bg-slate-900;
+        ::-webkit-scrollbar-track {
+            background: transparent;
         }
 
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            @apply bg-slate-300 dark:bg-slate-600/90 rounded-full;
+        ::-webkit-scrollbar-thumb {
+            @apply bg-slate-300/50 dark:bg-slate-600/50 rounded-full hover:bg-slate-400/80 dark:hover:bg-slate-500/80 transition;
         }
 
-        html {
-            scroll-behavior: smooth;
+        /* Animations */
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
         }
 
-        #autosave-indicator {
-            transition: opacity 0.3s ease;
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Selection */
+        ::selection {
+            @apply bg-violet-500/30 text-violet-900 dark:text-violet-100;
         }
 
         /* Mark for review tint */
         .marked-tint {
-            @apply bg-blue-50/80 dark:bg-blue-900/10 border-blue-400 dark:border-blue-400 !important;
+            @apply bg-indigo-50/80 dark:bg-indigo-900/40 border-indigo-400 dark:border-indigo-500 shadow-[0_0_25px_rgba(99,102,241,0.25)] !important;
         }
 
         /* Starred indicator glow */
         .starred-glow {
-            @apply border-amber-400 dark:border-amber-400 shadow-[0_0_15px_rgba(245, 158, 11, 0.25)] !important;
+            @apply border-amber-400 dark:border-amber-400 shadow-[0_0_30px_rgba(245,158,11,0.4)] !important;
         }
     </style>
 </head>
 
 <body
-    class="bg-slate-50 dark:bg-gradient-to-b dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300">
+    class="bg-gradient-to-br from-indigo-50 via-purple-50/50 to-pink-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300 selection:bg-violet-500/30">
 
     <!-- Autosave Indicator -->
     <div id="autosave-indicator"
-        class="fixed bottom-4 right-4 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest opacity-0 z-[100] pointer-events-none">
+        class="fixed bottom-6 right-6 bg-slate-900/80 dark:bg-white/80 backdrop-blur-md text-white dark:text-slate-900 text-[10px] px-4 py-1.5 rounded-full font-bold uppercase tracking-widest opacity-0 z-[100] pointer-events-none shadow-lg transform transition-all duration-300 translate-y-2">
         Saved ✓
     </div>
 
-    <div id="app" class="max-w-6xl mx-auto px-4 py-8">
+    <div id="app" class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <!-- Navigation Header -->
-        <header class="flex justify-between items-center mb-8">
+        <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
             <div id="header-left" class="flex items-center gap-4">
-                <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Study Portal</h1>
+                <div
+                    class="p-2 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-xl shadow-lg shadow-indigo-500/20 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                </div>
+                <div>
+                    <h1
+                        class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 tracking-tight">
+                        Study Portal</h1>
+                    <p class="text-[10px] uppercase tracking-widest text-slate-400 font-semibold">Multi-Test Manager</p>
+                </div>
             </div>
-            <div id="header-right" class="flex items-center gap-2 flex-wrap justify-end w-full sm:w-auto">
+            <div id="header-right"
+                class="flex items-center gap-3 flex-wrap justify-center md:justify-end w-full md:w-auto">
                 <!-- Version Badge -->
                 <div
-                    class="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 font-bold px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 whitespace-nowrap uppercase tracking-widest">
-                    v1.8</div>
+                    class="text-[9px] text-slate-400 dark:text-slate-500 font-bold px-2 py-1 rounded-md bg-white/50 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm whitespace-nowrap uppercase tracking-widest">
+                    v2.0 Beta</div>
                 <!-- Auth Status -->
-                <div id="auth-container" class="flex items-center gap-2 flex-wrap justify-end w-full sm:w-auto">
+                <div id="auth-container" class="flex items-center gap-3 flex-wrap justify-center md:justify-end">
                     <div id="user-info"
-                        class="hidden items-center gap-2 sm:gap-3 px-2 sm:px-4 py-1.5 sm:py-2 bg-slate-100 dark:bg-slate-800 rounded-lg order-last sm:order-none">
-                        <img id="user-avatar" class="w-5 h-5 sm:w-6 sm:h-6 rounded-full" alt="User">
+                        class="hidden items-center gap-3 pl-2 pr-2 py-1.5 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md rounded-full border border-white/20 dark:border-white/5 shadow-sm">
+                        <img id="user-avatar" class="w-7 h-7 rounded-full ring-2 ring-white dark:ring-slate-700"
+                            alt="User">
                         <span id="user-name"
-                            class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 hidden sm:inline"></span>
+                            class="text-xs font-semibold text-slate-700 dark:text-slate-200 hidden sm:inline"></span>
                         <button onclick="signOut()"
-                            class="text-xs bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded font-bold hover:bg-red-200 dark:hover:bg-red-900/50 transition">Sign
-                            Out</button>
+                            class="ml-1 w-7 h-7 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-rose-100 hover:text-rose-500 dark:hover:bg-rose-900/30 dark:hover:text-rose-400 transition"
+                            title="Sign Out">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
                     </div>
                     <button id="google-signin-btn"
-                        class="text-xs sm:text-sm bg-blue-600 text-white px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium hover:bg-blue-700 transition whitespace-nowrap">Sign
+                        class="text-xs sm:text-sm bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-2 rounded-full font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">Sign
                         in</button>
                 </div>
                 <!-- Theme Toggle -->
                 <button onclick="toggleTheme()"
-                    class="p-1.5 sm:p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+                    class="p-2 rounded-full bg-white/60 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50 text-slate-500 dark:text-slate-400 hover:bg-white hover:shadow-md dark:hover:bg-slate-800 transition backdrop-blur-sm"
                     title="Toggle Theme">
-                    <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 sm:h-5 sm:w-5 hidden dark:block" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
+                    <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 16.243l.707.707M7.757 7.757l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
                     </svg>
-                    <svg id="theme-icon-moon" xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 sm:h-5 sm:w-5 block dark:hidden" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
+                    <svg id="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 block dark:hidden"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                     </svg>
                 </button>
+                <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1 hidden sm:block"></div>
                 <button onclick="exportLibrary()"
-                    class="text-xs sm:text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition whitespace-nowrap">Export</button>
+                    class="p-2 rounded-full bg-white/60 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50 text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 hover:bg-white hover:shadow-md dark:hover:bg-slate-800 transition backdrop-blur-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                </button>
                 <label
-                    class="text-xs sm:text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer whitespace-nowrap">
-                    Import <input type="file" id="importLibraryInput" class="hidden" onchange="importLibrary(event)">
+                    class="p-2 rounded-full bg-white/60 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 hover:bg-white hover:shadow-md dark:hover:bg-slate-800 transition backdrop-blur-sm cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m-4-4v12" />
+                    </svg>
+                    <input type="file" id="importLibraryInput" class="hidden" onchange="importLibrary(event)">
                 </label>
             </div>
         </header>
 
         <!-- View: Home Screen -->
-        <main id="view-home" class="space-y-8">
+        <main id="view-home" class="space-y-8 animate-fade-in">
             <!-- Top Row: Add Test + To-Do (stacked on mobile, side-by-side on larger screens) -->
-            <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+            <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                 <!-- Upload Section -->
-                <div
-                    class="glass p-8 rounded-2xl border border-slate-200 dark:border-slate-800 card-shadow text-center">
-                    <h2 class="text-lg font-semibold mb-2 dark:text-white">Add New Test</h2>
-                    <p class="text-slate-500 dark:text-slate-400 text-sm mb-6">Upload a JSON answer key to create a new
-                        practice session.</p>
-                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
-                        <div class="w-full sm:w-64 space-y-2">
-                            <input type="text" id="newTestTitle" placeholder="Test Title (e.g. Physics Mock 1)"
-                                class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 mb-1">
-                            <input type="text" id="newTestSubject" placeholder="Subject (optional, e.g. Physics)"
-                                class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 text-xs">
-                        </div>
-                        <input type="file" id="newTestFile" accept=".json" class="hidden">
-                        <button onclick="document.getElementById('newTestFile').click()"
-                            class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">Upload
-                            JSON</button>
+                <div class="glass p-8 rounded-3xl card-shadow text-center relative overflow-hidden group">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition duration-500">
                     </div>
-                    <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
-                        <p class="text-xs text-slate-400 mb-3 uppercase tracking-widest font-bold">Need to extract
-                            answers from images?</p>
-                        <button onclick="copyExtractionPrompt()"
-                            class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-lg font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center gap-2 mx-auto">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+
+                    <div class="relative z-10">
+                        <div
+                            class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm group-hover:scale-110 transition duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                    d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            Copy Extraction Prompt
-                        </button>
+                        </div>
+                        <h2 class="text-xl font-bold mb-2 dark:text-white">Add New Test</h2>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mb-6 max-w-sm mx-auto">Upload a JSON answer
+                            key to create a new practice session and track your progress.</p>
+
+                        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
+                            <div class="w-full sm:w-72 space-y-3">
+                                <input type="text" id="newTestTitle" placeholder="Test Title (e.g. Physics Mock 1)"
+                                    class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm">
+                                <input type="text" id="newTestSubject" placeholder="Subject (optional, e.g. Physics)"
+                                    class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm">
+                            </div>
+                            <input type="file" id="newTestFile" accept=".json" class="hidden">
+                            <button onclick="document.getElementById('newTestFile').click()"
+                                class="w-full sm:w-auto self-stretch sm:self-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Upload
+                            </button>
+                        </div>
+
+                        <div class="pt-5 border-t border-slate-200/50 dark:border-slate-700/50">
+                            <button onclick="copyExtractionPrompt()"
+                                class="text-xs text-slate-500 dark:text-slate-400 font-semibold hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-2 mx-auto group/btn">
+                                <span class="group-hover/btn:underline decoration-blue-400/50 underline-offset-4">Need
+                                    to extract answers from images?</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <!-- To-Do List Section (Google Tasks) -->
-                <div class="glass p-8 rounded-2xl border border-slate-200 dark:border-slate-800 card-shadow">
-                    <div class="flex items-center justify-between gap-3 mb-3">
-                        <h2 class="text-lg font-semibold dark:text-white">Study To‑Do List</h2>
+                <div class="glass p-8 rounded-3xl card-shadow relative overflow-hidden h-full flex flex-col">
+                    <div class="flex items-center justify-between gap-3 mb-4">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                </svg>
+                            </div>
+                            <h2 class="text-xl font-bold dark:text-white">To‑Do List</h2>
+                        </div>
                         <button id="tasks-connect-btn" onclick="handleTasksAuthClick()"
-                            class="text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 px-3 py-1.5 rounded-lg font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition whitespace-nowrap">
+                            class="text-xs bg-white/50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg font-semibold hover:bg-white dark:hover:bg-slate-800 transition whitespace-nowrap backdrop-blur-sm">
                             Connect Google Tasks
                         </button>
                     </div>
-                    <p class="text-slate-500 dark:text-slate-400 text-xs mb-4">
-                        Keep a quick list of study to‑dos. When connected, this syncs with your default Google Tasks
-                        list.
-                    </p>
 
-                    <div id="tasks-status" class="text-[11px] mb-3 text-amber-500 dark:text-amber-300">
-                        Google Tasks not connected. You can still add local to‑dos (not synced).
+                    <div id="tasks-status"
+                        class="text-[11px] mb-4 font-medium px-3 py-1.5 rounded-lg bg-amber-50/50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30 inline-block self-start">
+                        Google Tasks not connected. You can still add local to‑dos.
                     </div>
 
                     <!-- Add To-Do -->
-                    <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                        <input id="todo-input" type="text" placeholder="New task (e.g. Review Physics Mock 1 mistakes)"
-                            class="flex-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+                    <div class="flex flex-col sm:flex-row gap-2 mb-6">
+                        <input id="todo-input" type="text" placeholder="New task..."
+                            class="glass-input flex-1 px-4 py-2.5 rounded-xl text-sm text-slate-900 dark:text-white outline-none placeholder:text-slate-400">
                         <input id="todo-due-date" type="date"
-                            class="px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+                            class="glass-input px-4 py-2.5 rounded-xl text-sm text-slate-900 dark:text-white outline-none">
                         <button onclick="addTodo()"
-                            class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-2 rounded-lg text-xs font-semibold hover:bg-slate-800 dark:hover:bg-slate-100 transition whitespace-nowrap">
+                            class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-800 dark:hover:bg-slate-200 transition shadow-lg whitespace-nowrap">
                             Add
                         </button>
                     </div>
 
                     <!-- Task List -->
                     <div id="todo-list"
-                        class="max-h-64 overflow-y-auto custom-scrollbar space-y-2 text-sm text-slate-700 dark:text-slate-200">
+                        class="flex-1 max-h-64 overflow-y-auto custom-scrollbar space-y-2.5 text-sm text-slate-700 dark:text-slate-200 pr-1">
                         <!-- Tasks rendered here -->
                     </div>
 
-                    <div class="mt-4 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500">
+                    <div
+                        class="mt-5 pt-3 border-t border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wider">
                         <span id="todo-count">0 tasks</span>
                         <button onclick="clearCompletedTodos()" class="hover:text-rose-500 transition">Clear
                             completed</button>
@@ -227,10 +313,29 @@
 
             <!-- Library Grid -->
             <section>
-                <h2 class="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white">
-                    My Tests <span id="test-count"
-                        class="bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs px-2 py-1 rounded-full">0</span>
-                </h2>
+                <div class="flex items-center justify-between mb-8">
+                    <h2
+                        class="text-3xl font-black flex items-center gap-3 bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">
+                        My Tests
+                        <span id="test-count"
+                            class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 text-slate-500 dark:text-slate-400 text-sm px-3 py-1 rounded-full font-bold shadow-sm">0</span>
+                    </h2>
+
+                    <!-- Search/Filter Placeholder -->
+                    <div class="hidden sm:flex items-center gap-2">
+                        <div class="relative group">
+                            <input type="text" placeholder="Search tests..."
+                                class="glass-input px-4 py-2 rounded-xl text-sm w-48 focus:w-64 transition-all duration-300 pl-10 text-slate-700 dark:text-slate-200 placeholder:text-slate-400">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="test-library" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Cards injected here -->
                 </div>
@@ -238,47 +343,49 @@
         </main>
 
         <!-- View: Test Workspace -->
-        <main id="view-test" class="hidden space-y-6">
-            <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+        <main id="view-test" class="hidden space-y-6 animate-fade-in relative">
+            <div class="flex flex-wrap justify-between items-center gap-4 mb-2">
                 <button onclick="goHome()"
-                    class="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    class="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition group px-3 py-2 rounded-xl hover:bg-white/50 dark:hover:bg-slate-800/50">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5 group-hover:-translate-x-1 transition-transform" viewBox="0 0 20 20"
+                        fill="currentColor">
                         <path fill-rule="evenodd"
                             d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
                             clip-rule="evenodd" />
                     </svg>
                     Back to Library
                 </button>
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
                     <!-- Goals and Timer Info -->
                     <div id="timer-display-area" class="flex items-center gap-3">
                         <div id="active-goal-stats"
-                            class="hidden items-center gap-2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider">
+                            class="hidden items-center gap-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-lg">
                             Goal: <span id="display-goal-num">0</span> Qs
                         </div>
                         <div
-                            class="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden h-9">
+                            class="flex items-center bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 rounded-xl overflow-hidden h-10 shadow-sm">
                             <div id="timer-box"
-                                class="flex items-center gap-2 px-3 py-1.5 text-slate-600 dark:text-slate-300 font-mono text-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition border-r border-slate-100 dark:border-slate-700"
+                                class="flex items-center gap-2 px-4 py-1.5 text-slate-700 dark:text-slate-200 font-mono text-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition border-r border-slate-200/50 dark:border-slate-700/50"
                                 onclick="openTimerSettings()" title="Timer Settings">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <span id="test-timer">00:00:00</span>
+                                <span id="test-timer" class="font-bold tracking-wider">00:00:00</span>
                             </div>
                             <button id="timer-toggle-btn" onclick="toggleTimer()"
-                                class="px-3 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-slate-600 dark:text-slate-400"
+                                class="px-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition text-slate-600 dark:text-slate-400 h-full flex items-center justify-center"
                                 title="Start/Stop Timer">
-                                <svg id="timer-play-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                    viewBox="0 0 20 20" fill="currentColor">
+                                <svg id="timer-play-icon" xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5 text-emerald-500" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd"
                                         d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
                                         clip-rule="evenodd" />
                                 </svg>
-                                <svg id="timer-stop-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 hidden"
-                                    viewBox="0 0 20 20" fill="currentColor">
+                                <svg id="timer-stop-icon" xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5 hidden text-amber-500" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd"
                                         d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z"
                                         clip-rule="evenodd" />
@@ -286,98 +393,146 @@
                             </button>
                         </div>
                     </div>
-                    <button onclick="openKeyViewer(activeTestId)"
-                        class="text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition dark:text-slate-200"
-                        title="View answer key">Original Key</button>
-                    <button onclick="exportSingleTest(activeTestId)"
-                        class="text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition dark:text-slate-200">Export</button>
-                    <button onclick="showReport()"
-                        class="bg-emerald-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-emerald-700 transition">Report</button>
+
+                    <div class="flex items-center gap-2">
+                        <button onclick="openKeyViewer(activeTestId)"
+                            class="p-2 rounded-xl bg-white/60 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 text-slate-500 dark:text-slate-400 transition"
+                            title="View answer key">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </button>
+                        <button onclick="exportSingleTest(activeTestId)"
+                            class="p-2 rounded-xl bg-white/60 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 text-slate-500 dark:text-slate-400 transition"
+                            title="Export">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                        </button>
+                        <button onclick="showReport()"
+                            class="p-2 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-900/50 transition font-bold flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <div id="test-workspace-header" class="space-y-4">
-                <h2 id="active-test-title" class="text-3xl font-bold text-slate-900 dark:text-white"></h2>
+                <h2 id="active-test-title" class="text-3xl font-black text-slate-900 dark:text-white leading-tight">
+                </h2>
 
                 <!-- Sticky Top Bar for Sections, Submit, and Filters -->
                 <div
-                    class="sticky top-0 z-20 bg-slate-50/95 dark:bg-slate-900/90 backdrop-blur-md -mx-4 px-4 py-4 border-b border-slate-200 dark:border-slate-800 space-y-3">
-                    <div class="flex items-center justify-between flex-wrap gap-4">
-                        <div class="flex gap-2 overflow-x-auto pb-2 custom-scrollbar flex-1" id="section-tabs"></div>
+                    class="sticky top-4 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-slate-700/50 p-2 shadow-lg shadow-slate-900/5 space-y-3 transition-all duration-300">
+                    <div class="flex items-center justify-between flex-wrap gap-4 px-2">
+                        <div class="flex gap-2 overflow-x-auto pb-1 custom-scrollbar flex-1 no-scrollbar"
+                            id="section-tabs"></div>
                         <button onclick="submitAllAttempted()"
-                            class="text-sm bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-4 py-2 rounded-lg font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition whitespace-nowrap">
-                            Submit All Attempted (Section)
+                            class="text-xs bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-4 py-2 rounded-lg font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition whitespace-nowrap uppercase tracking-wide">
+                            Submit Section
                         </button>
                     </div>
 
                     <!-- Sorting/Filters Row -->
-                    <div class="flex flex-wrap items-center gap-3">
+                    <div class="flex flex-wrap items-center gap-2 px-2 pb-1">
                         <span
-                            class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mr-2">Filters:</span>
+                            class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mr-2 flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                            </svg>
+                            Filters
+                        </span>
                         <button onclick="toggleFilter('wrong')" id="filter-wrong"
-                            class="text-xs px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-300 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
-                            Show Wrong
+                            class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
+                            Wrong
                         </button>
                         <button onclick="toggleFilter('unattempted')" id="filter-unattempted"
-                            class="text-xs px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-300 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
-                            Show Unattempted
+                            class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
+                            Unattempted
                         </button>
                         <button onclick="toggleFilter('marked')" id="filter-marked"
-                            class="text-xs px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-300 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
-                            Show Marked
+                            class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
+                            Marked
                         </button>
                         <button onclick="toggleFilter('starred')" id="filter-starred"
-                            class="text-xs px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-300 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95 flex items-center gap-1.5">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20"
+                            class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95 flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-amber-500" viewBox="0 0 20 20"
                                 fill="currentColor">
                                 <path
                                     d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                             </svg>
-                            Show Starred
+                            Starred
                         </button>
                         <button onclick="clearFilters()" id="filter-clear"
-                            class="hidden text-xs px-3 py-1.5 rounded-full text-rose-500 font-bold hover:bg-rose-50 dark:hover:bg-rose-900/20 transition">
-                            Clear Filters
+                            class="hidden text-[10px] px-3 py-1 rounded-full text-rose-500 font-bold hover:bg-rose-50 dark:hover:bg-rose-900/20 transition ml-auto uppercase tracking-wide">
+                            Reset
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div id="question-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            <div id="question-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 pb-20">
+            </div>
         </main>
     </div>
 
     <!-- Modals -->
     <!-- Report Modal -->
     <div id="reportModal"
-        class="fixed inset-0 bg-slate-900/50 dark:bg-black/70 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-3xl w-full p-8 relative max-h-[90vh] overflow-y-auto">
+        class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all duration-300">
+        <div
+            class="glass dark:bg-slate-900/95 rounded-3xl max-w-3xl w-full p-8 relative max-h-[90vh] overflow-y-auto card-shadow border border-slate-200/50 dark:border-slate-700/50 animate-scale-in">
             <button onclick="closeModal('reportModal')"
-                class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">✕</button>
-            <h3 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white">Performance Summary</h3>
+                class="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                </svg>
+            </button>
+            <h3 class="text-3xl font-black mb-8 text-slate-900 dark:text-white tracking-tight">Performance Summary</h3>
             <div id="reportContent" class="space-y-6"></div>
             <button onclick="closeModal('reportModal')"
-                class="mt-8 w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-3 rounded-xl font-bold">Done</button>
+                class="mt-8 w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-4 rounded-2xl font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">Done</button>
         </div>
     </div>
 
     <!-- Answer Key Viewer Modal -->
     <div id="keyViewerModal"
-        class="fixed inset-0 bg-slate-900/50 dark:bg-black/70 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-3xl w-full p-8 relative max-h-[90vh] flex flex-col">
+        class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all duration-300">
+        <div
+            class="glass dark:bg-slate-900/95 rounded-3xl max-w-4xl w-full p-8 relative max-h-[90vh] flex flex-col card-shadow border border-slate-200/50 dark:border-slate-700/50 animate-scale-in">
             <button onclick="closeModal('keyViewerModal')"
-                class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">✕</button>
-            <h3 id="keyViewerTitle" class="text-2xl font-bold mb-6 text-slate-900 dark:text-white">Answer Key</h3>
+                class="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                </svg>
+            </button>
+            <h3 id="keyViewerTitle" class="text-2xl font-bold mb-6 text-slate-900 dark:text-white pr-10">Answer Key</h3>
 
             <div id="keyViewerContent" class="space-y-6 overflow-y-auto custom-scrollbar pr-2 flex-1">
                 <!-- Answer key rows injected here -->
             </div>
 
-            <div class="flex gap-3 mt-8">
+            <div class="flex gap-4 mt-8 pt-4 border-t border-slate-200/50 dark:border-slate-700/50">
                 <button onclick="closeModal('keyViewerModal')"
-                    class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 py-3 rounded-xl font-bold">Close</button>
+                    class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 py-3 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition">Close</button>
                 <button id="downloadKeyBtn"
-                    class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20">
+                    class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-lg shadow-blue-500/20 hover:-translate-y-0.5 transition-all duration-300">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -391,83 +546,93 @@
 
     <!-- Timer/Goal Settings Modal -->
     <div id="timerSettingsModal"
-        class="fixed inset-0 bg-slate-900/50 dark:bg-black/70 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-8 relative">
-            <h3 class="text-xl font-bold mb-4 text-slate-900 dark:text-white">Session Settings</h3>
-            <div class="space-y-4">
+        class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all duration-300">
+        <div
+            class="glass dark:bg-slate-900/95 rounded-3xl max-w-md w-full p-8 relative card-shadow border border-slate-200/50 dark:border-slate-700/50 animate-scale-in">
+            <h3 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white">Session Settings</h3>
+            <div class="space-y-5">
                 <div>
-                    <label class="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">Time Limit
-                        (Minutes)</label>
+                    <label
+                        class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">Time
+                        Limit (Minutes)</label>
                     <input type="number" id="input-timer-mins" placeholder="e.g. 30"
-                        class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
-                    <p class="text-[10px] text-slate-400 mt-1">Set to 0 to use a simple count-up timer.</p>
+                        class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400">
+                    <p class="text-[11px] text-slate-400 mt-2 font-medium">Set to 0 to use a simple count-up timer.</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">Question
+                    <label
+                        class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">Question
                         Goal</label>
                     <input type="number" id="input-goal-num" placeholder="e.g. 20"
-                        class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                        class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400">
                 </div>
             </div>
             <div class="flex gap-3 mt-8">
                 <button onclick="closeModal('timerSettingsModal')"
-                    class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 py-2 rounded-lg font-bold">Cancel</button>
+                    class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 py-3 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition">Cancel</button>
                 <button onclick="saveTimerSettings()"
-                    class="flex-1 bg-blue-600 text-white py-2 rounded-lg font-bold shadow-lg shadow-blue-500/20">Save
-                    Settings</button>
+                    class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all duration-300">Save</button>
             </div>
         </div>
     </div>
 
     <!-- Edit Test Modal -->
     <div id="editTestModal"
-        class="fixed inset-0 bg-slate-900/50 dark:bg-black/70 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-8 relative">
+        class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all duration-300">
+        <div
+            class="glass dark:bg-slate-900/95 rounded-3xl max-w-md w-full p-8 relative card-shadow border border-slate-200/50 dark:border-slate-700/50 animate-scale-in">
             <button onclick="closeModal('editTestModal')"
-                class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">✕</button>
-            <h3 class="text-xl font-bold mb-4 text-slate-900 dark:text-white">Edit Test</h3>
-            <div class="space-y-4">
+                class="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                </svg>
+            </button>
+            <h3 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white">Edit Test</h3>
+            <div class="space-y-5">
                 <div>
-                    <label class="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">Title</label>
+                    <label
+                        class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">Title</label>
                     <input type="text" id="edit-test-title"
-                        class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                        class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">Subject</label>
-                    <input type="text" id="edit-test-subject" placeholder="e.g. Physics, Chemistry"
-                        class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
-                    <p class="text-[10px] text-slate-400 mt-1">Leave blank to keep this test in the Uncategorised
-                        section.</p>
+                    <label
+                        class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">Subject</label>
+                    <input type="text" id="edit-test-subject" placeholder="e.g. Physics"
+                        class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400">
+                    <p class="text-[11px] text-slate-400 mt-2 font-medium">Leave blank for Uncategorised.</p>
                 </div>
             </div>
             <div class="flex gap-3 mt-8">
                 <button onclick="closeModal('editTestModal')"
-                    class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 py-2 rounded-lg font-bold">Cancel</button>
+                    class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 py-3 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition">Cancel</button>
                 <button onclick="saveTestEdits()"
-                    class="flex-1 bg-blue-600 text-white py-2 rounded-lg font-bold shadow-lg shadow-blue-500/20">Save
-                    Changes</button>
+                    class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all duration-300">Save</button>
             </div>
         </div>
     </div>
 
     <!-- Timer End Notification -->
     <div id="timerEndModal"
-        class="fixed inset-0 bg-slate-900/50 dark:bg-black/70 hidden items-center justify-center z-[60] p-4">
+        class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm hidden items-center justify-center z-[60] p-4 transition-all duration-300">
         <div
-            class="bg-white dark:bg-slate-900 rounded-2xl max-sm w-full p-8 text-center shadow-2xl animate-bounce-short">
+            class="glass dark:bg-slate-900/95 rounded-3xl max-w-sm w-full p-8 text-center card-shadow border border-slate-200/50 dark:border-slate-700/50 animate-bounce-short">
             <div
-                class="w-16 h-16 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                class="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </div>
-            <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-2">Time's Up!</h3>
-            <p class="text-slate-500 dark:text-slate-400 text-sm mb-6">Your set timer has ended. You can dismiss this
-                and continue working on your test.</p>
+            <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-3">Time's Up!</h3>
+            <p class="text-slate-500 dark:text-slate-400 text-sm mb-8 px-4 leading-relaxed">Your set timer has ended.
+                You can dismiss this and continue working on your test.</p>
             <button onclick="closeModal('timerEndModal')"
-                class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg">Got it</button>
+                class="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all duration-300">Got
+                it</button>
         </div>
     </div>
 
@@ -965,7 +1130,7 @@
                     updateWorkspaceTimerUI();
                 }
 
-                const sections = Object.keys(test.key);
+                const sections = Object.keys(test.key).sort((a, b) => a.localeCompare(b));
                 renderSectionTabs(sections);
                 loadSection(sections[0]);
             } catch (err) {
@@ -985,7 +1150,15 @@
                 countEl.innerText = ids.length;
 
                 if (ids.length === 0) {
-                    container.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 italic">No tests uploaded yet.</div>`;
+                    container.innerHTML = `<div class="col-span-full text-center py-20">
+                        <div class="text-slate-300 dark:text-slate-600 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                        </div>
+                        <p class="text-slate-500 dark:text-slate-400 text-lg font-medium">No tests found</p>
+                        <p class="text-slate-400 dark:text-slate-500 text-sm">Upload a JSON file to get started.</p>
+                    </div>`;
                     return;
                 }
 
@@ -1010,14 +1183,22 @@
 
                     // Subject header
                     const header = document.createElement('div');
-                    header.className = 'col-span-full flex items-center justify-between mb-2 mt-4 first:mt-0';
+                    header.className = 'col-span-full flex items-center gap-4 mb-4 mt-8 first:mt-0';
                     header.innerHTML = `
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">${subjectName}</span>
-                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">${subjectTests.length} test${subjectTests.length !== 1 ? 's' : ''}</span>
-                        </div>
+                        <h3 class="text-lg font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                            ${subjectName}
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-extrabold uppercase tracking-widest border border-slate-200 dark:border-slate-700">${subjectTests.length}</span>
+                        </h3>
+                        <div class="h-px bg-slate-200/50 dark:bg-slate-700/50 flex-1"></div>
                     `;
                     container.appendChild(header);
+
+                    // Sort tests alphabetically by title
+                    subjectTests.sort((a, b) => {
+                        const titleA = (library[a].title || "").toLowerCase();
+                        const titleB = (library[b].title || "").toLowerCase();
+                        return titleA.localeCompare(titleB);
+                    });
 
                     subjectTests.forEach(id => {
                         const test = library[id];
@@ -1045,46 +1226,61 @@
                         const subjectLabel = (test.subject && String(test.subject).trim()) ? String(test.subject).trim() : 'Uncategorised';
 
                         const card = document.createElement('div');
-                        card.className = 'glass p-6 rounded-2xl border border-slate-200 dark:border-slate-800 card-shadow hover:scale-[1.02] transition cursor-pointer relative group';
+                        card.className = 'glass p-6 rounded-3xl cursor-pointer relative group transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/10 dark:hover:shadow-indigo-900/10 border-slate-100 dark:border-slate-800';
                         card.onclick = () => openTest(id);
+
+                        // Card Header Background Gradient (Optional subtle touch)
+                        const bgGradient = subjectName === 'Uncategorised'
+                            ? 'from-slate-500/10 to-slate-500/5'
+                            : 'from-blue-500/10 to-violet-500/5';
+
                         card.innerHTML = `
-                        <div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition">
-                            <button onclick="event.stopPropagation(); openKeyViewer('${id}')" title="View answer key" class="text-slate-400 hover:text-emerald-500 transition">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                            </button>
-                            <button onclick="event.stopPropagation(); exportSingleTest('${id}')" title="Export Test" class="text-slate-400 hover:text-blue-500 transition">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                            </button>
-                            <button onclick="event.stopPropagation(); openEditTest('${id}')" title="Edit Test" class="text-slate-400 hover:text-slate-600 transition">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M6 10a2 2 0 114 0 2 2 0 01-4 0z" />
-                                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2h8a2 2 0 012 2v10a1 1 0 01-1.447.894L12 14.618l-4.553 1.276A1 1 0 016 14.894V5z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                            <button onclick="event.stopPropagation(); deleteTest('${id}')" title="Delete Test" class="text-slate-400 hover:text-red-500 transition">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                            </button>
-                        </div>
-                        <h3 class="font-bold text-lg mb-1 text-slate-800 dark:text-white pr-12">${test.title}</h3>
-                        <p class="mb-3 text-[11px] text-slate-500 dark:text-slate-400">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 uppercase tracking-widest font-bold text-[9px]">
-                                ${subjectLabel}
-                            </span>
-                        </p>
-                        <div class="space-y-2">
-                            <div class="flex justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                <span>Completed</span>
-                                <span>${completedPct}%</span>
+                        <div class="absolute inset-0 bg-gradient-to-br ${bgGradient} opacity-0 group-hover:opacity-100 transition duration-500 rounded-3xl"></div>
+                        
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-white/60 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm text-[10px] uppercase tracking-widest font-bold text-slate-500 dark:text-slate-400 shadow-sm">
+                                    ${subjectLabel}
+                                </span>
+                                
+                                <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 transform translate-x-2 group-hover:translate-x-0">
+                                    <button onclick="event.stopPropagation(); openKeyViewer('${id}')" title="View answer key" class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                    </button>
+                                    <button onclick="event.stopPropagation(); exportSingleTest('${id}')" title="Export Test" class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                    </button>
+                                    <button onclick="event.stopPropagation(); openEditTest('${id}')" title="Edit Test" class="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                        </svg>
+                                    </button>
+                                    <button onclick="event.stopPropagation(); deleteTest('${id}')" title="Delete Test" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                    </button>
+                                </div>
                             </div>
-                            <div class="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden relative">
-                                <!-- Attempted Layer (Light Blue) -->
-                                <div class="absolute h-full bg-blue-400/40 dark:bg-blue-500/20 transition-all duration-500" style="width: ${attemptedPct}%"></div>
-                                <!-- Submitted Layer (Vibrant Blue) -->
-                                <div class="absolute h-full bg-blue-600 dark:bg-blue-500 transition-all duration-500 shadow-[0_0_8px_rgba(37,99,235,0.3)]" style="width: ${completedPct}%"></div>
-                            </div>
-                            <div class="flex justify-between items-center text-[10px] text-slate-400 dark:text-slate-500 mt-1 font-medium uppercase tracking-tight">
-                                <span>${completedQ}/${totalQ} Submitted • ${attemptedQ} Attempted</span>
-                                <span class="font-mono">${formatTime(test.timeSpent || 0)}</span>
+
+                            <h3 class="font-bold text-lg mb-4 text-slate-800 dark:text-gray-100 pr-2 leading-snug group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition">${test.title}</h3>
+
+                            <div class="space-y-3">
+                                <div class="flex justify-between text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                                    <span>Progress</span>
+                                    <span>${completedPct}%</span>
+                                </div>
+                                <div class="w-full h-2.5 bg-slate-100 dark:bg-black/40 rounded-full overflow-hidden relative shadow-inner">
+                                    <!-- Attempted Layer -->
+                                    <div class="absolute h-full bg-blue-400/30 dark:bg-blue-400/20 transition-all duration-700 ease-out" style="width: ${attemptedPct}%"></div>
+                                    <!-- Submitted Layer -->
+                                    <div class="absolute h-full bg-gradient-to-r from-blue-500 to-indigo-600 shadow-[0_0_10px_rgba(79,70,229,0.3)] transition-all duration-700 ease-out" style="width: ${completedPct}%"></div>
+                                </div>
+                                <div class="flex justify-between items-center mt-2">
+                                    <div class="flex items-center gap-1.5">
+                                        <div class="w-2 h-2 rounded-full ${completedPct === 100 ? 'bg-emerald-500' : (completedPct > 0 ? 'bg-amber-400' : 'bg-slate-300')}"></div>
+                                        <span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400">${completedQ}/${totalQ} Done</span>
+                                    </div>
+                                    <span class="font-mono text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">${formatTime(test.timeSpent || 0)}</span>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -1692,7 +1888,7 @@ If uncertain about any answer, mark it as null instead of guessing.`;
             container.innerHTML = '';
             sections.forEach(s => {
                 const btn = document.createElement('button');
-                btn.className = `px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap border border-transparent transition`;
+                btn.className = `px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap border border-transparent transition-all duration-300 uppercase tracking-wide`;
                 btn.id = `tab-${s.replace(/\s/g, '-')}`;
                 btn.innerText = s;
                 btn.onclick = () => loadSection(s);
@@ -1703,13 +1899,13 @@ If uncertain about any answer, mark it as null instead of guessing.`;
         function loadSection(sName) {
             activeSection = sName;
             document.querySelectorAll('#section-tabs button').forEach(b => {
-                b.classList.remove('bg-white', 'dark:bg-slate-800', 'text-blue-600', 'dark:text-blue-400', 'border-slate-200', 'dark:border-slate-700', 'shadow-sm');
-                b.classList.add('text-slate-500', 'dark:text-slate-400');
+                b.classList.remove('bg-white', 'dark:bg-slate-800', 'text-indigo-600', 'dark:text-indigo-400', 'border-slate-200', 'dark:border-slate-700', 'shadow-md', 'scale-105');
+                b.classList.add('text-slate-500', 'dark:text-slate-400', 'hover:bg-slate-100', 'dark:hover:bg-slate-800/50');
             });
             const activeTab = document.getElementById(`tab-${sName.replace(/\s/g, '-')}`);
             if (activeTab) {
-                activeTab.classList.add('bg-white', 'dark:bg-slate-800', 'text-blue-600', 'dark:text-blue-400', 'border-slate-200', 'dark:border-slate-700', 'shadow-sm');
-                activeTab.classList.remove('text-slate-500', 'dark:text-slate-400');
+                activeTab.classList.add('bg-white', 'dark:bg-slate-800', 'text-indigo-600', 'dark:text-indigo-400', 'border-slate-200', 'dark:border-slate-700', 'shadow-md', 'scale-105');
+                activeTab.classList.remove('text-slate-500', 'dark:text-slate-400', 'hover:bg-slate-100', 'dark:hover:bg-slate-800/50');
             }
 
             renderQuestions();
@@ -1739,18 +1935,29 @@ If uncertain about any answer, mark it as null instead of guessing.`;
                     }
 
                     const card = document.createElement('div');
-                    card.className = `glass p-6 rounded-2xl border transition relative ${prog.marked ? 'marked-tint' : ''} ${prog.starred ? 'starred-glow' : ''} ${prog.submitted ? 'border-blue-100 dark:border-blue-900/50 bg-blue-50/30 dark:bg-blue-900/10' : 'border-slate-200 dark:border-slate-800'}`;
+                    // Cleaner card style
+                    card.className = `glass p-6 rounded-3xl border transition-all duration-300 relative ${prog.marked ? 'marked-tint' : ''} ${prog.starred ? 'starred-glow' : ''} ${prog.submitted ? 'border-slate-200/50 dark:border-slate-700/50' : 'border-slate-100 dark:border-slate-800'}`;
+
+                    if (prog.submitted) {
+                        if (prog.correct) {
+                            card.classList.add('bg-emerald-50/30', 'dark:bg-emerald-900/10', 'border-emerald-200/50', 'dark:border-emerald-900/30');
+                        } else {
+                            card.classList.add('bg-rose-50/30', 'dark:bg-rose-900/10', 'border-rose-200/50', 'dark:border-rose-900/30');
+                        }
+                    }
 
                     const qHeader = `
-                        <div class="flex justify-between items-start mb-4">
-                            <span class="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Q${idx + 1}</span>
-                            <div class="flex gap-1">
-                                <button onclick="toggleStar(${idx})" class="p-1 rounded-full transition ${prog.starred ? 'text-amber-500 bg-amber-50 dark:bg-amber-900/30' : 'text-slate-300 dark:text-slate-600 hover:text-amber-400'}">
+                        <div class="flex justify-between items-start mb-6">
+                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-500 dark:text-slate-400 shadow-inner">
+                                ${idx + 1}
+                            </span>
+                            <div class="flex gap-2">
+                                <button onclick="toggleStar(${idx})" class="p-1.5 rounded-full transition ${prog.starred ? 'text-amber-500 bg-amber-50 dark:bg-amber-900/30 shadow-sm' : 'text-slate-300 dark:text-slate-600 hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800'}">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                     </svg>
                                 </button>
-                                <button onclick="toggleMark(${idx})" class="p-1 rounded-full transition ${prog.marked ? 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30' : 'text-slate-300 dark:text-slate-600 hover:text-slate-500'}">
+                                <button onclick="toggleMark(${idx})" class="p-1.5 rounded-full transition ${prog.marked ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/30 shadow-sm' : 'text-slate-300 dark:text-slate-600 hover:text-indigo-500 hover:bg-slate-100 dark:hover:bg-slate-800'}">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
                                     </svg>
@@ -1761,33 +1968,43 @@ If uncertain about any answer, mark it as null instead of guessing.`;
 
                     let inputHtml = '';
                     if (section.type === 'single' || (activeSection === "Section G (Match)" && idx >= 6)) {
-                        inputHtml = `<div class="flex gap-2">` + ['A', 'B', 'C', 'D'].map(o => `
+                        inputHtml = `<div class="grid grid-cols-4 gap-3 mb-6">` + ['A', 'B', 'C', 'D'].map(o => `
                             <button onclick="selectSingle(${idx}, '${o}')" ${prog.submitted ? 'disabled' : ''} 
-                                class="flex-1 py-2 rounded-lg border font-bold transition ${prog.userAns === o ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-blue-300 dark:hover:border-blue-800'}">
+                                class="aspect-square rounded-2xl font-bold transition-all duration-200 flex items-center justify-center text-lg ${prog.userAns === o ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 scale-105 border-transparent' : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600 shadow-sm'}">
                                 ${o}
                             </button>
                         `).join('') + `</div>`;
                     } else if (section.type === 'multi') {
-                        inputHtml = `<div class="flex gap-2">` + ['A', 'B', 'C', 'D'].map(o => `
+                        inputHtml = `<div class="grid grid-cols-4 gap-3 mb-6">` + ['A', 'B', 'C', 'D'].map(o => `
                             <button onclick="selectMulti(${idx}, '${o}')" ${prog.submitted ? 'disabled' : ''} 
-                                class="flex-1 py-2 rounded-lg border font-bold transition ${prog.userAns.includes(o) ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-blue-300 dark:hover:border-blue-800'}">
+                                class="aspect-square rounded-2xl font-bold transition-all duration-200 flex items-center justify-center text-lg ${prog.userAns.includes(o) ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 scale-105 border-transparent' : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600 shadow-sm'}">
                                 ${o}
                             </button>
                         `).join('') + `</div>`;
                     } else {
-                        inputHtml = `<div class="relative"><input type="text" placeholder="Your Answer" value="${prog.userAns || ''}" oninput="updateText(${idx}, this.value)" ${prog.submitted ? 'disabled' : ''} 
-                            class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-50 dark:disabled:bg-slate-900/50">
-                            ${!prog.submitted && prog.userAns ? `<button onclick="updateText(${idx}, ''); renderQuestions();" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-rose-500 transition">✕</button>` : ''}
+                        inputHtml = `<div class="relative mb-6">
+                            <input type="text" placeholder="Type answer..." value="${prog.userAns || ''}" oninput="updateText(${idx}, this.value)" ${prog.submitted ? 'disabled' : ''} 
+                            class="glass-input w-full px-5 py-4 rounded-xl text-lg text-center font-mono text-slate-900 dark:text-white outline-none disabled:opacity-60 placeholder:text-slate-300 dark:placeholder:text-slate-600">
+                            ${!prog.submitted && prog.userAns ? `<button onclick="updateText(${idx}, ''); renderQuestions();" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-rose-500 transition p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button>` : ''}
                             </div>`;
                     }
 
                     const submitBtn = `<button onclick="submitQuestion(${idx})" ${prog.submitted ? 'disabled' : ''} 
-                        class="w-full mt-4 py-3 rounded-xl font-bold transition ${prog.submitted ? 'bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-600' : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100'}">
+                        class="w-full py-3 rounded-xl font-bold text-sm tracking-wide transition-all duration-200 ${prog.submitted ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:shadow-lg hover:-translate-y-0.5'}">
                         ${prog.submitted ? 'Submitted' : 'Submit Answer'}
                     </button>`;
 
-                    const feedback = `<div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 ${prog.submitted ? 'block' : 'hidden'}">
-                        ${prog.correct ? '<span class="text-emerald-600 dark:text-emerald-400 font-bold text-sm">✓ Correct</span>' : `<span class="text-rose-500 dark:text-rose-400 font-bold text-sm">✗ Incorrect</span> <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Ans: ${ans}</p>`}
+                    const feedback = `<div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/50 ${prog.submitted ? 'block' : 'hidden'} animate-fade-in">
+                        ${prog.correct ?
+                            '<div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-sm"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg> Correct Answer</div>' :
+                            `<div class="flex items-start gap-2 text-rose-500 dark:text-rose-400 font-bold text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
+                                <div>
+                                    <span>Incorrect</span>
+                                    <div class="text-slate-500 dark:text-slate-400 font-normal text-xs mt-1">Correct Answer: <span class="font-mono font-bold">${ans}</span></div>
+                                </div>
+                            </div>`
+                        }
                     </div>`;
 
                     card.innerHTML = qHeader + inputHtml + submitBtn + feedback;
@@ -1795,7 +2012,7 @@ If uncertain about any answer, mark it as null instead of guessing.`;
                 });
 
                 if (container.innerHTML === '') {
-                    container.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 dark:text-slate-500 italic">No questions match the current filters.</div>`;
+                    container.innerHTML = `<div class="col-span-full text-center py-20 text-slate-400 dark:text-slate-500 italic">No questions match the current filters.</div>`;
                 }
 
             } catch (err) {
