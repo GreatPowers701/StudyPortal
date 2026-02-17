@@ -2,8 +2,6 @@
 
 A modern, feature-rich web application designed to help students manage practice tests, track performance, and organize study tasks. Built with a sleek Glassmorphism UI, it integrates seamless test-taking tools with powerful analytics.
 
-![Study Portal Screenshot](https://via.placeholder.com/800x400?text=Study+Portal+Preview) *Add a screenshot of your dashboard here.*
-
 ## ✨ Features
 
 *   **Interactive Test Taking:**
