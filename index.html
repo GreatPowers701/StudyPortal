@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
     <!-- Google Sign-In -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- Google APIs Client (for Google Tasks) -->
+    <script src="https://apis.google.com/js/api.js" async defer></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -32,29 +35,60 @@
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
         /* Softer "glass" for dark mode */
-        .glass { @apply bg-white/95 dark:bg-slate-800/90 backdrop-blur-md; }
-        .card-shadow { box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.15); }
-        
+        .glass {
+            @apply bg-white/95 dark:bg-slate-800/90 backdrop-blur-md;
+        }
+
+        .card-shadow {
+            box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.15);
+        }
+
         /* Subtle, lighter scrollbars in dark mode */
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { @apply bg-slate-100 dark:bg-slate-900; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { @apply bg-slate-300 dark:bg-slate-600/90 rounded-full; }
-        
-        html { scroll-behavior: smooth; }
-        #autosave-indicator { transition: opacity 0.3s ease; }
-        
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            @apply bg-slate-100 dark:bg-slate-900;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            @apply bg-slate-300 dark:bg-slate-600/90 rounded-full;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        #autosave-indicator {
+            transition: opacity 0.3s ease;
+        }
+
         /* Mark for review tint */
-        .marked-tint { @apply bg-blue-50/80 dark:bg-blue-900/10 border-blue-400 dark:border-blue-400 !important; }
+        .marked-tint {
+            @apply bg-blue-50/80 dark:bg-blue-900/10 border-blue-400 dark:border-blue-400 !important;
+        }
+
         /* Starred indicator glow */
-        .starred-glow { @apply border-amber-400 dark:border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.25)] !important; }
+        .starred-glow {
+            @apply border-amber-400 dark:border-amber-400 shadow-[0_0_15px_rgba(245, 158, 11, 0.25)] !important;
+        }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-gradient-to-b dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300">
+
+<body
+    class="bg-slate-50 dark:bg-gradient-to-b dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300">
 
     <!-- Autosave Indicator -->
-    <div id="autosave-indicator" class="fixed bottom-4 right-4 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest opacity-0 z-[100] pointer-events-none">
+    <div id="autosave-indicator"
+        class="fixed bottom-4 right-4 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest opacity-0 z-[100] pointer-events-none">
         Saved ✓
     </div>
 
@@ -66,23 +100,45 @@
             </div>
             <div id="header-right" class="flex items-center gap-2 flex-wrap justify-end w-full sm:w-auto">
                 <!-- Version Badge -->
-                <div class="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 font-bold px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 whitespace-nowrap uppercase tracking-widest">v1.1</div>
+                <div
+                    class="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 font-bold px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 whitespace-nowrap uppercase tracking-widest">
+                    v1.1</div>
                 <!-- Auth Status -->
                 <div id="auth-container" class="flex items-center gap-2 flex-wrap justify-end w-full sm:w-auto">
-                    <div id="user-info" class="hidden items-center gap-2 sm:gap-3 px-2 sm:px-4 py-1.5 sm:py-2 bg-slate-100 dark:bg-slate-800 rounded-lg order-last sm:order-none">
+                    <div id="user-info"
+                        class="hidden items-center gap-2 sm:gap-3 px-2 sm:px-4 py-1.5 sm:py-2 bg-slate-100 dark:bg-slate-800 rounded-lg order-last sm:order-none">
                         <img id="user-avatar" class="w-5 h-5 sm:w-6 sm:h-6 rounded-full" alt="User">
-                        <span id="user-name" class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 hidden sm:inline"></span>
-                        <button onclick="signOut()" class="text-xs bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded font-bold hover:bg-red-200 dark:hover:bg-red-900/50 transition">Sign Out</button>
+                        <span id="user-name"
+                            class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 hidden sm:inline"></span>
+                        <button onclick="signOut()"
+                            class="text-xs bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded font-bold hover:bg-red-200 dark:hover:bg-red-900/50 transition">Sign
+                            Out</button>
                     </div>
-                    <button id="google-signin-btn" class="text-xs sm:text-sm bg-blue-600 text-white px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium hover:bg-blue-700 transition whitespace-nowrap">Sign in</button>
+                    <button id="google-signin-btn"
+                        class="text-xs sm:text-sm bg-blue-600 text-white px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium hover:bg-blue-700 transition whitespace-nowrap">Sign
+                        in</button>
                 </div>
                 <!-- Theme Toggle -->
-                <button onclick="toggleTheme()" class="p-1.5 sm:p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition" title="Toggle Theme">
-                    <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 16.243l.707.707M7.757 7.757l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" /></svg>
-                    <svg id="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                <button onclick="toggleTheme()"
+                    class="p-1.5 sm:p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+                    title="Toggle Theme">
+                    <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 sm:h-5 sm:w-5 hidden dark:block" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 16.243l.707.707M7.757 7.757l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                    </svg>
+                    <svg id="theme-icon-moon" xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 sm:h-5 sm:w-5 block dark:hidden" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
                 </button>
-                <button onclick="exportLibrary()" class="text-xs sm:text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition whitespace-nowrap">Export</button>
-                <label class="text-xs sm:text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer whitespace-nowrap">
+                <button onclick="exportLibrary()"
+                    class="text-xs sm:text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition whitespace-nowrap">Export</button>
+                <label
+                    class="text-xs sm:text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer whitespace-nowrap">
                     Import <input type="file" id="importLibraryInput" class="hidden" onchange="importLibrary(event)">
                 </label>
             </div>
@@ -90,31 +146,90 @@
 
         <!-- View: Home Screen -->
         <main id="view-home" class="space-y-8">
-            <!-- Upload Section -->
-            <section class="glass p-8 rounded-2xl border border-slate-200 dark:border-slate-800 card-shadow text-center">
-                <h2 class="text-lg font-semibold mb-2 dark:text-white">Add New Test</h2>
-                <p class="text-slate-500 dark:text-slate-400 text-sm mb-6">Upload a JSON answer key to create a new practice session.</p>
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
-                    <div class="w-full sm:w-64 space-y-2">
-                        <input type="text" id="newTestTitle" placeholder="Test Title (e.g. Physics Mock 1)" class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 mb-1">
-                        <input type="text" id="newTestSubject" placeholder="Subject (optional, e.g. Physics)" class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 text-xs">
+            <!-- Top Row: Add Test + To-Do (stacked on mobile, side-by-side on larger screens) -->
+            <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                <!-- Upload Section -->
+                <div
+                    class="glass p-8 rounded-2xl border border-slate-200 dark:border-slate-800 card-shadow text-center">
+                    <h2 class="text-lg font-semibold mb-2 dark:text-white">Add New Test</h2>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm mb-6">Upload a JSON answer key to create a new
+                        practice session.</p>
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
+                        <div class="w-full sm:w-64 space-y-2">
+                            <input type="text" id="newTestTitle" placeholder="Test Title (e.g. Physics Mock 1)"
+                                class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 mb-1">
+                            <input type="text" id="newTestSubject" placeholder="Subject (optional, e.g. Physics)"
+                                class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 text-xs">
+                        </div>
+                        <input type="file" id="newTestFile" accept=".json" class="hidden">
+                        <button onclick="document.getElementById('newTestFile').click()"
+                            class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">Upload
+                            JSON</button>
                     </div>
-                    <input type="file" id="newTestFile" accept=".json" class="hidden">
-                    <button onclick="document.getElementById('newTestFile').click()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">Upload JSON</button>
+                    <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
+                        <p class="text-xs text-slate-400 mb-3 uppercase tracking-widest font-bold">Need to extract
+                            answers from images?</p>
+                        <button onclick="copyExtractionPrompt()"
+                            class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-lg font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center gap-2 mx-auto">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                            </svg>
+                            Copy Extraction Prompt
+                        </button>
+                    </div>
                 </div>
-                <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
-                    <p class="text-xs text-slate-400 mb-3 uppercase tracking-widest font-bold">Need to extract answers from images?</p>
-                    <button onclick="copyExtractionPrompt()" class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-lg font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center gap-2 mx-auto">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
-                        Copy Extraction Prompt
-                    </button>
+
+                <!-- To-Do List Section (Google Tasks) -->
+                <div class="glass p-8 rounded-2xl border border-slate-200 dark:border-slate-800 card-shadow">
+                    <div class="flex items-center justify-between gap-3 mb-3">
+                        <h2 class="text-lg font-semibold dark:text-white">Study To‑Do List</h2>
+                        <button id="tasks-connect-btn" onclick="handleTasksAuthClick()"
+                            class="text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 px-3 py-1.5 rounded-lg font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition whitespace-nowrap">
+                            Connect Google Tasks
+                        </button>
+                    </div>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs mb-4">
+                        Keep a quick list of study to‑dos. When connected, this syncs with your default Google Tasks
+                        list.
+                    </p>
+
+                    <div id="tasks-status" class="text-[11px] mb-3 text-amber-500 dark:text-amber-300">
+                        Google Tasks not connected. You can still add local to‑dos (not synced).
+                    </div>
+
+                    <!-- Add To-Do -->
+                    <div class="flex flex-col sm:flex-row gap-2 mb-4">
+                        <input id="todo-input" type="text" placeholder="New task (e.g. Review Physics Mock 1 mistakes)"
+                            class="flex-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+                        <input id="todo-due-date" type="date"
+                            class="px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+                        <button onclick="addTodo()"
+                            class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-2 rounded-lg text-xs font-semibold hover:bg-slate-800 dark:hover:bg-slate-100 transition whitespace-nowrap">
+                            Add
+                        </button>
+                    </div>
+
+                    <!-- Task List -->
+                    <div id="todo-list"
+                        class="max-h-64 overflow-y-auto custom-scrollbar space-y-2 text-sm text-slate-700 dark:text-slate-200">
+                        <!-- Tasks rendered here -->
+                    </div>
+
+                    <div class="mt-4 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500">
+                        <span id="todo-count">0 tasks</span>
+                        <button onclick="clearCompletedTodos()" class="hover:text-rose-500 transition">Clear
+                            completed</button>
+                    </div>
                 </div>
             </section>
 
             <!-- Library Grid -->
             <section>
                 <h2 class="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white">
-                    My Tests <span id="test-count" class="bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs px-2 py-1 rounded-full">0</span>
+                    My Tests <span id="test-count"
+                        class="bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs px-2 py-1 rounded-full">0</span>
                 </h2>
                 <div id="test-library" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Cards injected here -->
@@ -125,62 +240,103 @@
         <!-- View: Test Workspace -->
         <main id="view-test" class="hidden space-y-6">
             <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
-                <button onclick="goHome()" class="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
+                <button onclick="goHome()"
+                    class="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
                     Back to Library
                 </button>
                 <div class="flex items-center gap-4">
                     <!-- Goals and Timer Info -->
                     <div id="timer-display-area" class="flex items-center gap-3">
-                        <div id="active-goal-stats" class="hidden items-center gap-2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider">
+                        <div id="active-goal-stats"
+                            class="hidden items-center gap-2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider">
                             Goal: <span id="display-goal-num">0</span> Qs
                         </div>
-                        <div class="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden h-9">
-                            <div id="timer-box" class="flex items-center gap-2 px-3 py-1.5 text-slate-600 dark:text-slate-300 font-mono text-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition border-r border-slate-100 dark:border-slate-700" onclick="openTimerSettings()" title="Timer Settings">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <div
+                            class="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden h-9">
+                            <div id="timer-box"
+                                class="flex items-center gap-2 px-3 py-1.5 text-slate-600 dark:text-slate-300 font-mono text-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition border-r border-slate-100 dark:border-slate-700"
+                                onclick="openTimerSettings()" title="Timer Settings">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
                                 <span id="test-timer">00:00:00</span>
                             </div>
-                            <button id="timer-toggle-btn" onclick="toggleTimer()" class="px-3 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-slate-600 dark:text-slate-400" title="Start/Stop Timer">
-                                <svg id="timer-play-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
-                                <svg id="timer-stop-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 hidden" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clip-rule="evenodd" /></svg>
+                            <button id="timer-toggle-btn" onclick="toggleTimer()"
+                                class="px-3 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-slate-600 dark:text-slate-400"
+                                title="Start/Stop Timer">
+                                <svg id="timer-play-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                <svg id="timer-stop-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 hidden"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z"
+                                        clip-rule="evenodd" />
+                                </svg>
                             </button>
                         </div>
                     </div>
-                    <button onclick="openKeyViewer(activeTestId)" class="text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition dark:text-slate-200" title="View answer key">Original Key</button>
-                    <button onclick="exportSingleTest(activeTestId)" class="text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition dark:text-slate-200">Export</button>
-                    <button onclick="showReport()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-emerald-700 transition">Report</button>
+                    <button onclick="openKeyViewer(activeTestId)"
+                        class="text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition dark:text-slate-200"
+                        title="View answer key">Original Key</button>
+                    <button onclick="exportSingleTest(activeTestId)"
+                        class="text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition dark:text-slate-200">Export</button>
+                    <button onclick="showReport()"
+                        class="bg-emerald-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-emerald-700 transition">Report</button>
                 </div>
             </div>
 
             <div id="test-workspace-header" class="space-y-4">
                 <h2 id="active-test-title" class="text-3xl font-bold text-slate-900 dark:text-white"></h2>
-                
+
                 <!-- Sticky Top Bar for Sections, Submit, and Filters -->
-                <div class="sticky top-0 z-20 bg-slate-50/95 dark:bg-slate-900/90 backdrop-blur-md -mx-4 px-4 py-4 border-b border-slate-200 dark:border-slate-800 space-y-3">
+                <div
+                    class="sticky top-0 z-20 bg-slate-50/95 dark:bg-slate-900/90 backdrop-blur-md -mx-4 px-4 py-4 border-b border-slate-200 dark:border-slate-800 space-y-3">
                     <div class="flex items-center justify-between flex-wrap gap-4">
                         <div class="flex gap-2 overflow-x-auto pb-2 custom-scrollbar flex-1" id="section-tabs"></div>
-                        <button onclick="submitAllAttempted()" class="text-sm bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-4 py-2 rounded-lg font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition whitespace-nowrap">
+                        <button onclick="submitAllAttempted()"
+                            class="text-sm bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-4 py-2 rounded-lg font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition whitespace-nowrap">
                             Submit All Attempted (Section)
                         </button>
                     </div>
-                    
+
                     <!-- Sorting/Filters Row -->
                     <div class="flex flex-wrap items-center gap-3">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mr-2">Filters:</span>
-                        <button onclick="toggleFilter('wrong')" id="filter-wrong" class="text-xs px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-300 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
+                        <span
+                            class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mr-2">Filters:</span>
+                        <button onclick="toggleFilter('wrong')" id="filter-wrong"
+                            class="text-xs px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-300 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
                             Show Wrong
                         </button>
-                        <button onclick="toggleFilter('unattempted')" id="filter-unattempted" class="text-xs px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-300 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
+                        <button onclick="toggleFilter('unattempted')" id="filter-unattempted"
+                            class="text-xs px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-300 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
                             Show Unattempted
                         </button>
-                        <button onclick="toggleFilter('marked')" id="filter-marked" class="text-xs px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-300 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
+                        <button onclick="toggleFilter('marked')" id="filter-marked"
+                            class="text-xs px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-300 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
                             Show Marked
                         </button>
-                        <button onclick="toggleFilter('starred')" id="filter-starred" class="text-xs px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-300 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95 flex items-center gap-1.5">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                        <button onclick="toggleFilter('starred')" id="filter-starred"
+                            class="text-xs px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-300 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95 flex items-center gap-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path
+                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
                             Show Starred
                         </button>
-                        <button onclick="clearFilters()" id="filter-clear" class="hidden text-xs px-3 py-1.5 rounded-full text-rose-500 font-bold hover:bg-rose-50 dark:hover:bg-rose-900/20 transition">
+                        <button onclick="clearFilters()" id="filter-clear"
+                            class="hidden text-xs px-3 py-1.5 rounded-full text-rose-500 font-bold hover:bg-rose-50 dark:hover:bg-rose-900/20 transition">
                             Clear Filters
                         </button>
                     </div>
@@ -193,29 +349,40 @@
 
     <!-- Modals -->
     <!-- Report Modal -->
-    <div id="reportModal" class="fixed inset-0 bg-slate-900/50 dark:bg-black/70 hidden items-center justify-center z-50 p-4">
+    <div id="reportModal"
+        class="fixed inset-0 bg-slate-900/50 dark:bg-black/70 hidden items-center justify-center z-50 p-4">
         <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-3xl w-full p-8 relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal('reportModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">✕</button>
+            <button onclick="closeModal('reportModal')"
+                class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">✕</button>
             <h3 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white">Performance Summary</h3>
             <div id="reportContent" class="space-y-6"></div>
-            <button onclick="closeModal('reportModal')" class="mt-8 w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-3 rounded-xl font-bold">Done</button>
+            <button onclick="closeModal('reportModal')"
+                class="mt-8 w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-3 rounded-xl font-bold">Done</button>
         </div>
     </div>
 
     <!-- Answer Key Viewer Modal -->
-    <div id="keyViewerModal" class="fixed inset-0 bg-slate-900/50 dark:bg-black/70 hidden items-center justify-center z-50 p-4">
+    <div id="keyViewerModal"
+        class="fixed inset-0 bg-slate-900/50 dark:bg-black/70 hidden items-center justify-center z-50 p-4">
         <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-3xl w-full p-8 relative max-h-[90vh] flex flex-col">
-            <button onclick="closeModal('keyViewerModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">✕</button>
+            <button onclick="closeModal('keyViewerModal')"
+                class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">✕</button>
             <h3 id="keyViewerTitle" class="text-2xl font-bold mb-6 text-slate-900 dark:text-white">Answer Key</h3>
-            
+
             <div id="keyViewerContent" class="space-y-6 overflow-y-auto custom-scrollbar pr-2 flex-1">
                 <!-- Answer key rows injected here -->
             </div>
-            
+
             <div class="flex gap-3 mt-8">
-                <button onclick="closeModal('keyViewerModal')" class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 py-3 rounded-xl font-bold">Close</button>
-                <button id="downloadKeyBtn" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                <button onclick="closeModal('keyViewerModal')"
+                    class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 py-3 rounded-xl font-bold">Close</button>
+                <button id="downloadKeyBtn"
+                    class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
                     Download JSON
                 </button>
             </div>
@@ -223,59 +390,84 @@
     </div>
 
     <!-- Timer/Goal Settings Modal -->
-    <div id="timerSettingsModal" class="fixed inset-0 bg-slate-900/50 dark:bg-black/70 hidden items-center justify-center z-50 p-4">
+    <div id="timerSettingsModal"
+        class="fixed inset-0 bg-slate-900/50 dark:bg-black/70 hidden items-center justify-center z-50 p-4">
         <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-8 relative">
             <h3 class="text-xl font-bold mb-4 text-slate-900 dark:text-white">Session Settings</h3>
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">Time Limit (Minutes)</label>
-                    <input type="number" id="input-timer-mins" placeholder="e.g. 30" class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">Time Limit
+                        (Minutes)</label>
+                    <input type="number" id="input-timer-mins" placeholder="e.g. 30"
+                        class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
                     <p class="text-[10px] text-slate-400 mt-1">Set to 0 to use a simple count-up timer.</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">Question Goal</label>
-                    <input type="number" id="input-goal-num" placeholder="e.g. 20" class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">Question
+                        Goal</label>
+                    <input type="number" id="input-goal-num" placeholder="e.g. 20"
+                        class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
             </div>
             <div class="flex gap-3 mt-8">
-                <button onclick="closeModal('timerSettingsModal')" class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 py-2 rounded-lg font-bold">Cancel</button>
-                <button onclick="saveTimerSettings()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg font-bold shadow-lg shadow-blue-500/20">Save Settings</button>
+                <button onclick="closeModal('timerSettingsModal')"
+                    class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 py-2 rounded-lg font-bold">Cancel</button>
+                <button onclick="saveTimerSettings()"
+                    class="flex-1 bg-blue-600 text-white py-2 rounded-lg font-bold shadow-lg shadow-blue-500/20">Save
+                    Settings</button>
             </div>
         </div>
     </div>
 
     <!-- Edit Test Modal -->
-    <div id="editTestModal" class="fixed inset-0 bg-slate-900/50 dark:bg-black/70 hidden items-center justify-center z-50 p-4">
+    <div id="editTestModal"
+        class="fixed inset-0 bg-slate-900/50 dark:bg-black/70 hidden items-center justify-center z-50 p-4">
         <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-8 relative">
-            <button onclick="closeModal('editTestModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">✕</button>
+            <button onclick="closeModal('editTestModal')"
+                class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">✕</button>
             <h3 class="text-xl font-bold mb-4 text-slate-900 dark:text-white">Edit Test</h3>
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">Title</label>
-                    <input type="text" id="edit-test-title" class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    <input type="text" id="edit-test-title"
+                        class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">Subject</label>
-                    <input type="text" id="edit-test-subject" placeholder="e.g. Physics, Chemistry" class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
-                    <p class="text-[10px] text-slate-400 mt-1">Leave blank to keep this test in the Uncategorised section.</p>
+                    <input type="text" id="edit-test-subject" placeholder="e.g. Physics, Chemistry"
+                        class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    <p class="text-[10px] text-slate-400 mt-1">Leave blank to keep this test in the Uncategorised
+                        section.</p>
                 </div>
             </div>
             <div class="flex gap-3 mt-8">
-                <button onclick="closeModal('editTestModal')" class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 py-2 rounded-lg font-bold">Cancel</button>
-                <button onclick="saveTestEdits()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg font-bold shadow-lg shadow-blue-500/20">Save Changes</button>
+                <button onclick="closeModal('editTestModal')"
+                    class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 py-2 rounded-lg font-bold">Cancel</button>
+                <button onclick="saveTestEdits()"
+                    class="flex-1 bg-blue-600 text-white py-2 rounded-lg font-bold shadow-lg shadow-blue-500/20">Save
+                    Changes</button>
             </div>
         </div>
     </div>
 
     <!-- Timer End Notification -->
-    <div id="timerEndModal" class="fixed inset-0 bg-slate-900/50 dark:bg-black/70 hidden items-center justify-center z-[60] p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl max-sm w-full p-8 text-center shadow-2xl animate-bounce-short">
-            <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+    <div id="timerEndModal"
+        class="fixed inset-0 bg-slate-900/50 dark:bg-black/70 hidden items-center justify-center z-[60] p-4">
+        <div
+            class="bg-white dark:bg-slate-900 rounded-2xl max-sm w-full p-8 text-center shadow-2xl animate-bounce-short">
+            <div
+                class="w-16 h-16 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
             </div>
             <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-2">Time's Up!</h3>
-            <p class="text-slate-500 dark:text-slate-400 text-sm mb-6">Your set timer has ended. You can dismiss this and continue working on your test.</p>
-            <button onclick="closeModal('timerEndModal')" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg">Got it</button>
+            <p class="text-slate-500 dark:text-slate-400 text-sm mb-6">Your set timer has ended. You can dismiss this
+                and continue working on your test.</p>
+            <button onclick="closeModal('timerEndModal')"
+                class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg">Got it</button>
         </div>
     </div>
 
@@ -292,7 +484,19 @@
         let auth = null;
         let db = null;
         let editingTestId = null;
-        
+
+        // --- To-Do / Google Tasks State ---
+        let todos = [];
+        let editingTodoIndex = null; // Track which todo is being edited
+        let tasksClientInitialized = false;
+        let tasksSignedIn = false;
+        let tokenClient;
+        let accessToken = null;
+        const TASKS_CLIENT_ID = '1068803170496-74g9qkb8851fbvamiduik6ik64opqu6e.apps.googleusercontent.com';
+        const TASKS_API_KEY = 'AIzaSyAEw5jkjWOWj5yiBn-UB2GW-xSGZ6VBiKY';
+        const TASKS_DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/tasks/v1/rest'];
+        const TASKS_SCOPES = 'https://www.googleapis.com/auth/tasks';
+
         // Active Filtering State
         let filters = {
             wrong: false,
@@ -336,7 +540,7 @@
                     currentUser = user;
                     const userInfo = document.getElementById('user-info');
                     const signinBtn = document.getElementById('google-signin-btn');
-                    
+
                     if (user) {
                         userInfo.classList.remove('hidden');
                         userInfo.classList.add('flex');
@@ -395,6 +599,9 @@
             applyTheme();
             setupFileUpload();
             initializeFirebase();
+            loadLocalTodos();
+            renderTodos();
+            initializeGoogleTasksClient();
         };
 
         // --- Theme Logic ---
@@ -442,7 +649,7 @@
                             throw new Error("Invalid schema structure.");
                         }
                         const id = 'test_' + Date.now();
-                        
+
                         library[id] = {
                             id: id,
                             title: title,
@@ -456,7 +663,7 @@
                             timerRunning: false,
                             lastUpdate: Date.now()
                         };
-                        
+
                         saveAndSync();
                         titleIn.value = '';
                         if (subjectIn) subjectIn.value = '';
@@ -472,11 +679,11 @@
         // --- Firestore Data Sync ---
         async function loadUserLibraryFromFirestore() {
             if (!currentUser) return;
-            
+
             try {
                 const docRef = db.collection('users').doc(currentUser.uid);
                 const docSnap = await docRef.get();
-                
+
                 if (docSnap.exists) {
                     library = docSnap.data().library || {};
                 } else {
@@ -490,7 +697,7 @@
 
         async function saveLibraryToFirestore() {
             if (!currentUser || isSyncing) return;
-            
+
             isSyncing = true;
             try {
                 await db.collection('users').doc(currentUser.uid).set({
@@ -498,7 +705,7 @@
                     lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
                     email: currentUser.email
                 });
-                
+
                 const indicator = document.getElementById('autosave-indicator');
                 if (indicator) {
                     indicator.style.opacity = '1';
@@ -571,7 +778,7 @@
 
         function startTimer() {
             if (timerInterval) clearInterval(timerInterval);
-            
+
             const playIcon = document.getElementById('timer-play-icon');
             const stopIcon = document.getElementById('timer-stop-icon');
             if (playIcon) playIcon.classList.add('hidden');
@@ -589,7 +796,7 @@
                     const now = Date.now();
                     const delta = Math.round((now - test.lastUpdate) / 1000);
                     test.lastUpdate = now;
-                    
+
                     if (test.timerMode === 'countdown') {
                         test.timerLimit -= delta;
                         test.timeSpent += delta;
@@ -611,12 +818,12 @@
         function stopTimer() {
             clearInterval(timerInterval);
             timerInterval = null;
-            
+
             const playIcon = document.getElementById('timer-play-icon');
             const stopIcon = document.getElementById('timer-stop-icon');
             if (playIcon) playIcon.classList.remove('hidden');
             if (stopIcon) stopIcon.classList.add('hidden');
-            
+
             if (activeTestId && library[activeTestId]) {
                 library[activeTestId].timerRunning = false;
             }
@@ -645,12 +852,12 @@
             } else {
                 test.timerMode = 'countup';
             }
-            
+
             test.sessionGoal = goal;
             saveAndSync();
             closeModal('timerSettingsModal');
             updateWorkspaceTimerUI();
-            
+
             if (wasRunning) startTimer();
         }
 
@@ -658,7 +865,7 @@
             const test = library[activeTestId];
             const goalArea = document.getElementById('active-goal-stats');
             const goalNum = document.getElementById('display-goal-num');
-            
+
             if (test.sessionGoal > 0) {
                 goalArea.classList.remove('hidden');
                 goalArea.classList.add('flex');
@@ -672,7 +879,7 @@
             if (timerEl) {
                 timerEl.innerText = test.timerMode === 'countdown' ? formatTime(test.timerLimit) : formatTime(test.timeSpent);
             }
-            
+
             const playIcon = document.getElementById('timer-play-icon');
             const stopIcon = document.getElementById('timer-stop-icon');
             if (timerInterval) {
@@ -708,7 +915,7 @@
         function updateFilterUI() {
             const anyActive = filters.wrong || filters.unattempted || filters.marked || filters.starred;
             document.getElementById('filter-clear').classList.toggle('hidden', !anyActive);
-            
+
             Object.keys(filters).forEach(key => {
                 const btn = document.getElementById(`filter-${key}`);
                 if (btn) {
@@ -741,7 +948,7 @@
                 document.getElementById('view-home').classList.add('hidden');
                 document.getElementById('view-test').classList.remove('hidden');
                 document.getElementById('active-test-title').innerText = test.title;
-                
+
                 if (test.timerRunning) {
                     const now = Date.now();
                     const delta = Math.round((now - test.lastUpdate) / 1000);
@@ -757,7 +964,7 @@
                 } else {
                     updateWorkspaceTimerUI();
                 }
-                
+
                 const sections = Object.keys(test.key);
                 renderSectionTabs(sections);
                 loadSection(sections[0]);
@@ -773,7 +980,7 @@
                 const container = document.getElementById('test-library');
                 const countEl = document.getElementById('test-count');
                 container.innerHTML = '';
-                
+
                 const ids = Object.keys(library);
                 countEl.innerText = ids.length;
 
@@ -816,31 +1023,31 @@
                         const test = library[id];
                         if (!test || !test.key) return;
 
-                    let totalQ = 0, attemptedQ = 0, completedQ = 0;
-                    
-                    Object.keys(test.key).forEach(s => {
-                        const sAns = test.key[s].answers;
-                        const sProg = test.progress ? (test.progress[s] || {}) : {};
-                        totalQ += sAns.length;
-                        
-                        sAns.forEach((_, idx) => {
-                            const q = sProg[idx];
-                            if (q) {
-                                if (q.submitted) completedQ++;
-                                const hasAns = Array.isArray(q.userAns) ? q.userAns.length > 0 : (q.userAns && q.userAns.toString().trim() !== "");
-                                if (hasAns) attemptedQ++;
-                            }
-                        });
-                    });
-                    
-                    const completedPct = totalQ > 0 ? Math.round((completedQ / totalQ) * 100) : 0;
-                    const attemptedPct = totalQ > 0 ? Math.round((attemptedQ / totalQ) * 100) : 0;
-                    const subjectLabel = (test.subject && String(test.subject).trim()) ? String(test.subject).trim() : 'Uncategorised';
+                        let totalQ = 0, attemptedQ = 0, completedQ = 0;
 
-                    const card = document.createElement('div');
-                    card.className = 'glass p-6 rounded-2xl border border-slate-200 dark:border-slate-800 card-shadow hover:scale-[1.02] transition cursor-pointer relative group';
-                    card.onclick = () => openTest(id);
-                    card.innerHTML = `
+                        Object.keys(test.key).forEach(s => {
+                            const sAns = test.key[s].answers;
+                            const sProg = test.progress ? (test.progress[s] || {}) : {};
+                            totalQ += sAns.length;
+
+                            sAns.forEach((_, idx) => {
+                                const q = sProg[idx];
+                                if (q) {
+                                    if (q.submitted) completedQ++;
+                                    const hasAns = Array.isArray(q.userAns) ? q.userAns.length > 0 : (q.userAns && q.userAns.toString().trim() !== "");
+                                    if (hasAns) attemptedQ++;
+                                }
+                            });
+                        });
+
+                        const completedPct = totalQ > 0 ? Math.round((completedQ / totalQ) * 100) : 0;
+                        const attemptedPct = totalQ > 0 ? Math.round((attemptedQ / totalQ) * 100) : 0;
+                        const subjectLabel = (test.subject && String(test.subject).trim()) ? String(test.subject).trim() : 'Uncategorised';
+
+                        const card = document.createElement('div');
+                        card.className = 'glass p-6 rounded-2xl border border-slate-200 dark:border-slate-800 card-shadow hover:scale-[1.02] transition cursor-pointer relative group';
+                        card.onclick = () => openTest(id);
+                        card.innerHTML = `
                         <div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition">
                             <button onclick="event.stopPropagation(); openKeyViewer('${id}')" title="View answer key" class="text-slate-400 hover:text-emerald-500 transition">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
@@ -881,7 +1088,7 @@
                             </div>
                         </div>
                     `;
-                    container.appendChild(card);
+                        container.appendChild(card);
                     });
                 });
             } catch (err) {
@@ -992,7 +1199,7 @@ If uncertain about any answer, mark it as null instead of guessing.`;
             document.body.appendChild(textArea);
             textArea.focus();
             textArea.select();
-            
+
             try {
                 document.execCommand('copy');
                 const indicator = document.getElementById('autosave-indicator');
@@ -1008,8 +1215,474 @@ If uncertain about any answer, mark it as null instead of guessing.`;
             } catch (err) {
                 console.error('Copy failed', err);
             }
-            
+
             document.body.removeChild(textArea);
+        }
+
+        // --- To-Do List (Local + Google Tasks) ---
+
+        function loadLocalTodos() {
+            try {
+                const raw = localStorage.getItem('portal_todos');
+                if (!raw) {
+                    todos = [];
+                    return;
+                }
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed)) {
+                    todos = parsed;
+                } else {
+                    todos = [];
+                }
+            } catch (e) {
+                console.error('Failed to load todos from localStorage', e);
+                todos = [];
+            }
+        }
+
+        function saveLocalTodos() {
+            try {
+                localStorage.setItem('portal_todos', JSON.stringify(todos));
+            } catch (e) {
+                console.error('Failed to save todos', e);
+            }
+        }
+
+        function renderTodos() {
+            const listEl = document.getElementById('todo-list');
+            const countEl = document.getElementById('todo-count');
+            if (!listEl || !countEl) return;
+
+            listEl.innerHTML = '';
+            if (!todos.length) {
+                listEl.innerHTML = `<div class="text-xs text-slate-400 dark:text-slate-500 italic">No tasks yet. Add your first to‑do above.</div>`;
+                countEl.innerText = '0 tasks';
+                return;
+            }
+
+            todos.forEach((t, idx) => {
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-2 bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2';
+
+                if (editingTodoIndex === idx) {
+                    // Edit Mode UI
+                    row.innerHTML = `
+                        <input type="text" id="edit-todo-text-${idx}" value="${t.text}" class="flex-1 px-2 py-1 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs text-slate-900 dark:text-white outline-none focus:ring-1 focus:ring-blue-500">
+                        <input type="date" id="edit-todo-date-${idx}" value="${t.due || ''}" class="px-2 py-1 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs text-slate-900 dark:text-white outline-none focus:ring-1 focus:ring-blue-500">
+                        <button onclick="saveEdit(${idx})" class="text-emerald-500 hover:text-emerald-600 font-bold px-1" title="Save">✔</button>
+                        <button onclick="cancelEdit()" class="text-slate-400 hover:text-slate-500 font-bold px-1" title="Cancel">✕</button>
+                    `;
+                } else {
+                    // View Mode UI
+                    let dueDateHtml = '';
+                    if (t.due) {
+                        const dateObj = new Date(t.due);
+                        const dateStr = dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                        dueDateHtml = `<span class="text-[10px] text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700 rounded px-1.5 py-0.5 whitespace-nowrap flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                            </svg>
+                            ${dateStr}
+                        </span>`;
+                    }
+
+                    row.innerHTML = `
+                        <button onclick="toggleTodoCompleted(${idx})" class="w-4 h-4 rounded border flex items-center justify-center text-[10px] ${t.completed ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 dark:border-slate-600 text-transparent'}">
+                            ✓
+                        </button>
+                        <div class="flex-1 text-xs sm:text-sm ${t.completed ? 'line-through text-slate-400 dark:text-slate-500' : ''} flex items-center flex-wrap gap-2">
+                            <span>${t.text}</span>
+                            ${dueDateHtml}
+                        </div>
+                        <button onclick="startEdit(${idx})" class="text-slate-300 hover:text-blue-500 transition text-xs mr-1" title="Edit">✎</button>
+                        <button onclick="deleteTodo(${idx})" class="text-slate-300 hover:text-rose-500 transition text-xs" title="Delete">✕</button>
+                    `;
+                }
+                listEl.appendChild(row);
+            });
+
+            const remaining = todos.filter(t => !t.completed).length;
+            const plural = todos.length === 1 ? 'task' : 'tasks';
+            countEl.innerText = `${todos.length} ${plural} (${remaining} left)`;
+        }
+
+        function addTodo() {
+            const input = document.getElementById('todo-input');
+            const dateInput = document.getElementById('todo-due-date');
+            if (!input) return;
+            const text = input.value.trim();
+            if (!text) return;
+
+            let due = null;
+            if (dateInput && dateInput.value) {
+                // Store as YYYY-MM-DD string locally or just invoke date string
+                due = dateInput.value;
+            }
+
+            const todo = { text, completed: false, googleTaskId: null, due: due };
+            todos.unshift(todo);
+            input.value = '';
+            if (dateInput) dateInput.value = ''; // Reset date picker
+            saveLocalTodos();
+            renderTodos();
+
+            // If Google Tasks is ready and signed in, also create remotely
+            if (tasksClientInitialized && tasksSignedIn && typeof gapi !== 'undefined' && gapi.client && gapi.client.tasks) {
+                createGoogleTaskForTodo(todo);
+            }
+        }
+
+        function toggleTodoCompleted(idx) {
+            if (idx < 0 || idx >= todos.length) return;
+            const todo = todos[idx];
+            todo.completed = !todo.completed;
+            saveLocalTodos();
+            renderTodos();
+
+            if (tasksClientInitialized && tasksSignedIn && todo.googleTaskId && typeof gapi !== 'undefined' && gapi.client && gapi.client.tasks) {
+                updateGoogleTaskCompletion(todo.googleTaskId, todo.completed);
+            }
+        }
+
+        function deleteTodo(idx) {
+            if (idx < 0 || idx >= todos.length) return;
+            const todo = todos[idx];
+            todos.splice(idx, 1);
+            saveLocalTodos();
+            renderTodos();
+
+            if (tasksClientInitialized && tasksSignedIn && todo.googleTaskId && typeof gapi !== 'undefined' && gapi.client && gapi.client.tasks) {
+                deleteGoogleTask(todo.googleTaskId);
+            }
+        }
+
+        function startEdit(idx) {
+            editingTodoIndex = idx;
+            renderTodos();
+
+            // Focus the text input
+            setTimeout(() => {
+                const input = document.getElementById(`edit-todo-text-${idx}`);
+                if (input) input.focus();
+            }, 50);
+        }
+
+        function cancelEdit() {
+            editingTodoIndex = null;
+            renderTodos();
+        }
+
+        function saveEdit(idx) {
+            const textInput = document.getElementById(`edit-todo-text-${idx}`);
+            const dateInput = document.getElementById(`edit-todo-date-${idx}`);
+            if (!textInput) return;
+
+            const newText = textInput.value.trim();
+            if (!newText) {
+                alert("Task cannot be empty.");
+                return;
+            }
+
+            const newDue = dateInput && dateInput.value ? dateInput.value : null;
+            const todo = todos[idx];
+
+            todo.text = newText;
+            todo.due = newDue;
+
+            editingTodoIndex = null;
+            saveLocalTodos();
+            renderTodos();
+
+            if (tasksClientInitialized && tasksSignedIn && todo.googleTaskId && typeof gapi !== 'undefined' && gapi.client && gapi.client.tasks) {
+                updateGoogleTask(todo);
+            }
+        }
+
+        function clearCompletedTodos() {
+            const remaining = todos.filter(t => !t.completed);
+            const removed = todos.length - remaining.length;
+            if (!removed) return;
+            todos = remaining;
+            saveLocalTodos();
+            renderTodos();
+        }
+
+        function updateTasksStatus(message, tone = 'neutral') {
+            const statusEl = document.getElementById('tasks-status');
+            if (!statusEl) return;
+            statusEl.innerText = message;
+            statusEl.classList.remove('text-amber-500', 'dark:text-amber-300', 'text-emerald-500', 'dark:text-emerald-300', 'text-rose-500', 'dark:text-rose-300');
+
+            if (tone === 'warning') {
+                statusEl.classList.add('text-amber-500', 'dark:text-amber-300');
+            } else if (tone === 'success') {
+                statusEl.classList.add('text-emerald-500', 'dark:text-emerald-300');
+            } else if (tone === 'error') {
+                statusEl.classList.add('text-rose-500', 'dark:text-rose-300');
+            } else {
+                statusEl.classList.add('text-amber-500', 'dark:text-amber-300');
+            }
+        }
+
+        function updateTasksAuthUI() {
+            const btn = document.getElementById('tasks-connect-btn');
+            if (!btn) return;
+            if (tasksSignedIn) {
+                btn.innerText = 'Disconnect Tasks';
+                btn.classList.remove('bg-blue-50', 'dark:bg-blue-900/30', 'text-blue-700', 'dark:text-blue-300');
+                btn.classList.add('bg-slate-100', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-200');
+                updateTasksStatus('Synced with your default Google Tasks list.', 'success');
+            } else {
+                btn.innerText = 'Connect Google Tasks';
+                btn.classList.add('bg-blue-50', 'dark:bg-blue-900/30', 'text-blue-700', 'dark:text-blue-300');
+                btn.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-200');
+                updateTasksStatus('Google Tasks not connected. You can still add local to‑dos (not synced).', 'warning');
+            }
+        }
+
+        function handleTasksAuthClick() {
+            if (!tokenClient) {
+                alert('Google Tasks client is still loading. Please try again in a moment.');
+                return;
+            }
+
+            if (tasksSignedIn) {
+                // GIS doesn't have a direct "signOut" method like gapi.auth2.
+                // We simply clear our local state and the access token.
+                // To truly revoke, you'd allow the user to revoke permissions, but for this app, 
+                // clearing the session state is usually sufficient for "disconnect".
+                const token = gapi.client.getToken();
+                if (token !== null) {
+                    google.accounts.oauth2.revoke(token.access_token, () => {
+                        console.log('Token revoked.');
+                    });
+                    gapi.client.setToken('');
+                }
+                tasksSignedIn = false;
+                accessToken = null;
+                localStorage.removeItem('portal_tasks_token');
+                localStorage.removeItem('portal_tasks_token_expiry');
+                updateTasksAuthUI();
+                updateTasksStatus('Disconnected from Google Tasks.', 'neutral');
+            } else {
+                if (gapi.client.getToken() === null) {
+                    // Prompt the user to select a Google Account and ask for consent to share their data
+                    // when establishing a new session.
+                    tokenClient.requestAccessToken({ prompt: 'consent' });
+                } else {
+                    // Skip display of account chooser and consent dialog for an existing session.
+                    tokenClient.requestAccessToken({ prompt: '' });
+                }
+            }
+        }
+
+        function restoreTasksSession() {
+            const storedToken = localStorage.getItem('portal_tasks_token');
+            const storedExpiry = localStorage.getItem('portal_tasks_token_expiry');
+
+            if (storedToken && storedExpiry) {
+                if (Date.now() < parseInt(storedExpiry)) {
+                    gapi.client.setToken({ access_token: storedToken });
+                    tasksSignedIn = true;
+                    accessToken = storedToken;
+                    updateTasksAuthUI();
+                    fetchGoogleTasksIntoTodos();
+                    console.log('Restored Google Tasks session from storage.');
+                } else {
+                    console.log('Stored token expired.');
+                    localStorage.removeItem('portal_tasks_token');
+                    localStorage.removeItem('portal_tasks_token_expiry');
+                }
+            }
+        }
+
+        async function initializeGoogleTasksClient() {
+            // If the developer hasn't configured the keys yet, keep everything local-only.
+            if (TASKS_CLIENT_ID.startsWith('REPLACE_') || TASKS_API_KEY.startsWith('REPLACE_')) {
+                console.info('Google Tasks keys not configured; to‑dos will remain local-only.');
+                return;
+            }
+
+            const start = Date.now();
+            const maxWait = 5000;
+            const waitForGapi = async () => {
+                while (typeof gapi === 'undefined' && Date.now() - start < maxWait) {
+                    await new Promise(r => setTimeout(r, 200));
+                }
+            };
+
+            await waitForGapi();
+            if (typeof gapi === 'undefined') {
+                console.warn('gapi not available; Google Tasks integration disabled.');
+                return;
+            }
+
+            gapi.load('client', async () => {
+                try {
+                    await gapi.client.init({
+                        apiKey: TASKS_API_KEY,
+                        discoveryDocs: TASKS_DISCOVERY_DOCS,
+                    });
+
+                    tasksClientInitialized = true;
+
+                    // Initialize the Token Client
+                    tokenClient = google.accounts.oauth2.initTokenClient({
+                        client_id: TASKS_CLIENT_ID,
+                        scope: TASKS_SCOPES,
+                        callback: (tokenResponse) => {
+                            if (tokenResponse && tokenResponse.access_token) {
+                                tasksSignedIn = true;
+                                accessToken = tokenResponse.access_token;
+
+                                // Save token (expires_in is usually 3599 seconds)
+                                const expiresIn = tokenResponse.expires_in || 3599;
+                                const expiryTime = Date.now() + (expiresIn * 1000);
+                                localStorage.setItem('portal_tasks_token', accessToken);
+                                localStorage.setItem('portal_tasks_token_expiry', expiryTime);
+
+                                updateTasksAuthUI();
+                                fetchGoogleTasksIntoTodos();
+                            }
+                        },
+                    });
+
+                    restoreTasksSession();
+                    updateTasksAuthUI();
+                } catch (e) {
+                    console.error('Failed to initialize Google Tasks client', e);
+                    updateTasksStatus('Google Tasks setup failed; using local to‑dos only.', 'error');
+                }
+            });
+        }
+
+        async function fetchGoogleTasksIntoTodos() {
+            if (!tasksClientInitialized || !tasksSignedIn || !gapi.client || !gapi.client.tasks) return;
+            try {
+                const response = await gapi.client.tasks.tasks.list({
+                    tasklist: '@default',
+                    showCompleted: true,
+                    maxResults: 50
+                });
+                const items = response.result.items || [];
+
+                // Merge remote tasks into local list by text label
+                const byText = new Map();
+                todos.forEach(t => {
+                    byText.set(t.text, t);
+                });
+
+                items.forEach(item => {
+                    const text = item.title || '';
+                    if (!text) return;
+                    const completed = typeof item.status === 'string' && item.status === 'completed'; // status is 'needsAction' or 'completed'
+
+                    // Parse due date if present (RFC 3339 timestamp)
+                    let due = null;
+                    if (item.due) {
+                        // Google Tasks returns a full timestamp string like "2023-10-26T00:00:00.000Z"
+                        // We just want YYYY-MM-DD for our local logic/input
+                        due = item.due.split('T')[0];
+                    }
+
+                    const existing = byText.get(text);
+                    if (existing) {
+                        existing.completed = completed;
+                        existing.googleTaskId = item.id;
+                        if (due) existing.due = due;
+                    } else {
+                        todos.push({
+                            text,
+                            completed,
+                            googleTaskId: item.id,
+                            due: due
+                        });
+                    }
+                });
+
+                saveLocalTodos();
+                renderTodos();
+                updateTasksStatus('Synced with Google Tasks (@default list).', 'success');
+            } catch (e) {
+                console.error('Failed to fetch Google Tasks', e);
+                updateTasksStatus('Could not load Google Tasks; working from local list only.', 'error');
+            }
+        }
+
+        async function createGoogleTaskForTodo(todo) {
+            try {
+                const res = await gapi.client.tasks.tasks.insert({
+                    tasklist: '@default',
+                    resource: {
+                        title: todo.text,
+                        status: todo.completed ? 'completed' : 'needsAction',
+                        due: todo.due ? new Date(todo.due).toISOString() : undefined
+                    }
+                });
+                if (res && res.result && res.result.id) {
+                    todo.googleTaskId = res.result.id;
+                    saveLocalTodos();
+                }
+            } catch (e) {
+                console.error('Failed to create Google Task', e);
+            }
+        }
+
+        async function updateGoogleTaskCompletion(taskId, completed) {
+            try {
+                const res = await gapi.client.tasks.tasks.get({
+                    tasklist: '@default',
+                    task: taskId
+                });
+                const task = res.result;
+                task.status = completed ? 'completed' : 'needsAction';
+                if (completed) {
+                    task.completed = new Date().toISOString();
+                } else {
+                    task.completed = null;
+                }
+                await gapi.client.tasks.tasks.update({
+                    tasklist: '@default',
+                    task: taskId,
+                    resource: task
+                });
+            } catch (e) {
+                console.error('Failed to update Google Task completion', e);
+            }
+        }
+
+        async function deleteGoogleTask(taskId) {
+            try {
+                await gapi.client.tasks.tasks.delete({
+                    tasklist: '@default',
+                    task: taskId
+                });
+            } catch (e) {
+                console.error('Failed to delete Google Task', e);
+            }
+        }
+
+        async function updateGoogleTask(todo) {
+            try {
+                // First get existing task to preserve other fields if needed, 
+                // but mainly we just overwrite title and due date.
+                const res = await gapi.client.tasks.tasks.get({
+                    tasklist: '@default',
+                    task: todo.googleTaskId
+                });
+                const task = res.result;
+
+                task.title = todo.text;
+                task.due = todo.due ? new Date(todo.due).toISOString() : null; // Parsing 'YYYY-MM-DD' creates a UTC midnight date, which is what we want for full-day tasks usually
+
+                await gapi.client.tasks.tasks.update({
+                    tasklist: '@default',
+                    task: todo.googleTaskId,
+                    resource: task
+                });
+            } catch (e) {
+                console.error('Failed to update Google Task', e);
+            }
         }
 
         // --- Rendering Workspace ---
@@ -1055,7 +1728,7 @@ If uncertain about any answer, mark it as null instead of guessing.`;
 
                 section.answers.forEach((ans, idx) => {
                     const prog = progress[idx] || { userAns: section.type === 'multi' ? [] : "", submitted: false, marked: false, starred: false };
-                    
+
                     if (isAnyFilterActive) {
                         let match = false;
                         if (filters.wrong && prog.submitted && !prog.correct) match = true;
@@ -1067,10 +1740,10 @@ If uncertain about any answer, mark it as null instead of guessing.`;
 
                     const card = document.createElement('div');
                     card.className = `glass p-6 rounded-2xl border transition relative ${prog.marked ? 'marked-tint' : ''} ${prog.starred ? 'starred-glow' : ''} ${prog.submitted ? 'border-blue-100 dark:border-blue-900/50 bg-blue-50/30 dark:bg-blue-900/10' : 'border-slate-200 dark:border-slate-800'}`;
-                    
+
                     const qHeader = `
                         <div class="flex justify-between items-start mb-4">
-                            <span class="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Q${idx+1}</span>
+                            <span class="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Q${idx + 1}</span>
                             <div class="flex gap-1">
                                 <button onclick="toggleStar(${idx})" class="p-1 rounded-full transition ${prog.starred ? 'text-amber-500 bg-amber-50 dark:bg-amber-900/30' : 'text-slate-300 dark:text-slate-600 hover:text-amber-400'}">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -1085,17 +1758,17 @@ If uncertain about any answer, mark it as null instead of guessing.`;
                             </div>
                         </div>
                     `;
-                    
+
                     let inputHtml = '';
                     if (section.type === 'single' || (activeSection === "Section G (Match)" && idx >= 6)) {
-                        inputHtml = `<div class="flex gap-2">` + ['A','B','C','D'].map(o => `
+                        inputHtml = `<div class="flex gap-2">` + ['A', 'B', 'C', 'D'].map(o => `
                             <button onclick="selectSingle(${idx}, '${o}')" ${prog.submitted ? 'disabled' : ''} 
                                 class="flex-1 py-2 rounded-lg border font-bold transition ${prog.userAns === o ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-blue-300 dark:hover:border-blue-800'}">
                                 ${o}
                             </button>
                         `).join('') + `</div>`;
                     } else if (section.type === 'multi') {
-                        inputHtml = `<div class="flex gap-2">` + ['A','B','C','D'].map(o => `
+                        inputHtml = `<div class="flex gap-2">` + ['A', 'B', 'C', 'D'].map(o => `
                             <button onclick="selectMulti(${idx}, '${o}')" ${prog.submitted ? 'disabled' : ''} 
                                 class="flex-1 py-2 rounded-lg border font-bold transition ${prog.userAns.includes(o) ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-blue-300 dark:hover:border-blue-800'}">
                                 ${o}
@@ -1189,7 +1862,7 @@ If uncertain about any answer, mark it as null instead of guessing.`;
             initSectionProgress();
             const q = library[activeTestId].progress[activeSection][qIdx];
             const actualAns = library[activeTestId].key[activeSection].answers[qIdx];
-            
+
             const hasAns = Array.isArray(q.userAns) ? q.userAns.length > 0 : (q.userAns && q.userAns.toString().trim() !== "");
             if (!hasAns) {
                 alert("Please select/enter an answer first.");
@@ -1205,7 +1878,7 @@ If uncertain about any answer, mark it as null instead of guessing.`;
         function submitAllAttempted() {
             if (!activeTestId || !activeSection) return;
             initSectionProgress();
-            
+
             const test = library[activeTestId];
             const sectionKey = test.key[activeSection];
             const progress = test.progress[activeSection];
@@ -1268,36 +1941,36 @@ If uncertain about any answer, mark it as null instead of guessing.`;
             const titleEl = document.getElementById('keyViewerTitle');
             const contentEl = document.getElementById('keyViewerContent');
             const downloadBtn = document.getElementById('downloadKeyBtn');
-            
+
             titleEl.innerText = `Answer Key: ${test.title}`;
             contentEl.innerHTML = '';
-            
+
             Object.keys(test.key).forEach(sectionName => {
                 const section = test.key[sectionName];
                 const sectionDiv = document.createElement('div');
                 sectionDiv.className = 'bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800';
-                
+
                 const sectionHeader = document.createElement('h4');
                 sectionHeader.className = 'font-bold text-slate-700 dark:text-slate-300 mb-3 uppercase tracking-wider text-xs';
                 sectionHeader.innerText = sectionName;
                 sectionDiv.appendChild(sectionHeader);
-                
+
                 const grid = document.createElement('div');
                 grid.className = 'grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3';
-                
+
                 section.answers.forEach((ans, idx) => {
                     const item = document.createElement('div');
                     item.className = 'text-[11px] flex flex-col items-center bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700';
-                    item.innerHTML = `<span class="text-slate-400 dark:text-slate-500 font-bold mb-1">Q${idx+1}</span> <span class="text-slate-800 dark:text-slate-200 font-black">${ans}</span>`;
+                    item.innerHTML = `<span class="text-slate-400 dark:text-slate-500 font-bold mb-1">Q${idx + 1}</span> <span class="text-slate-800 dark:text-slate-200 font-black">${ans}</span>`;
                     grid.appendChild(item);
                 });
-                
+
                 sectionDiv.appendChild(grid);
                 contentEl.appendChild(sectionDiv);
             });
-            
+
             downloadBtn.onclick = () => downloadOriginalKey(id);
-            
+
             const modal = document.getElementById('keyViewerModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -1326,7 +1999,7 @@ If uncertain about any answer, mark it as null instead of guessing.`;
             if (!test) return;
             const content = document.getElementById('reportContent');
             content.innerHTML = '';
-            
+
             let total = 0, totalCorrect = 0, totalAttempted = 0, totalIncorrect = 0;
             const sectionRows = [];
 
@@ -1334,7 +2007,7 @@ If uncertain about any answer, mark it as null instead of guessing.`;
                 const sAns = test.key[s].answers;
                 const sProg = test.progress ? (test.progress[s] || {}) : {};
                 let sCorrect = 0, sAttempted = 0, sIncorrect = 0;
-                
+
                 sAns.forEach((_, idx) => {
                     const q = sProg[idx];
                     if (q && q.submitted) {
@@ -1411,7 +2084,7 @@ If uncertain about any answer, mark it as null instead of guessing.`;
                     </span>
                 </div>` : ''}
             `;
-            
+
             content.appendChild(summary);
             const gridContainer = document.createElement('div');
             gridContainer.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
@@ -1432,4 +2105,5 @@ If uncertain about any answer, mark it as null instead of guessing.`;
         }
     </script>
 </body>
+
 </html>
