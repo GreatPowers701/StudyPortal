@@ -34,8 +34,6 @@
             }
         }
     </script>
-    <link rel="stylesheet" href="css/styles.css">
-
     <style type="text/tailwindcss">
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
@@ -452,14 +450,21 @@
             <div
                 class="sticky top-4 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-slate-700/50 p-2 shadow-lg shadow-slate-900/5 space-y-3 transition-all duration-300">
                 <div class="flex items-center justify-between flex-wrap gap-4 px-2">
-                    <div class="flex gap-2 overflow-x-auto pb-1 custom-scrollbar flex-1 no-scrollbar" id="section-tabs">
+                    <div class="flex gap-2 overflow-x-auto pb-1 custom-scrollbar flex-1 no-scrollbar hidden sm:flex"
+                        id="section-tabs">
+                    </div>
+                    <!-- Mobile Section Dropdown -->
+                    <div class="block sm:hidden flex-1">
+                        <select id="section-dropdown" onchange="loadSection(this.value)"
+                            class="w-full px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500">
+                        </select>
                     </div>
                     <button onclick="submitAllAttempted()"
                         class="text-xs bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-4 py-2 rounded-lg font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition whitespace-nowrap uppercase tracking-wide">
                         Submit Section
                     </button>
                     <button id="btn-toggle-pdf" onclick="togglePdfView()"
-                        class="hidden text-xs bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-rose-800 px-3 py-2 rounded-lg font-bold hover:bg-rose-100 dark:hover:bg-rose-900/50 transition whitespace-nowrap uppercase tracking-wide gap-1 items-center">
+                        class="hidden max-sm:hidden text-xs bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-rose-800 px-3 py-2 rounded-lg font-bold hover:bg-rose-100 dark:hover:bg-rose-900/50 transition whitespace-nowrap uppercase tracking-wide gap-1 items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -468,7 +473,7 @@
                         View PDF
                     </button>
                     <button id="btn-view-solutions" onclick="openSolutionPdf()"
-                        class="hidden text-xs bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-3 py-2 rounded-lg font-bold hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition whitespace-nowrap uppercase tracking-wide gap-1 items-center">
+                        class="hidden max-sm:hidden text-xs bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-3 py-2 rounded-lg font-bold hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition whitespace-nowrap uppercase tracking-wide gap-1 items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
