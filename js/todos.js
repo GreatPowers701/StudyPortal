@@ -288,56 +288,69 @@ async function initializeGoogleTasksClient() {
     }
 
     const start = Date.now();
-    const maxWait = 5000;
-    const waitForGapi = async () => {
-        while (typeof gapi === 'undefined' && Date.now() - start < maxWait) {
-            await new Promise(r => setTimeout(r, 200));
-        }
-    };
+    const maxWait = 8000;
 
-    await waitForGapi();
+    // Wait for gapi to load
+    while (typeof gapi === 'undefined' && Date.now() - start < maxWait) {
+        await new Promise(r => setTimeout(r, 200));
+    }
     if (typeof gapi === 'undefined') {
         console.warn('gapi not available; Google Tasks integration disabled.');
         return;
     }
 
-    gapi.load('client', async () => {
-        try {
-            await gapi.client.init({
-                apiKey: TASKS_API_KEY,
-                discoveryDocs: TASKS_DISCOVERY_DOCS,
-            });
+    // Wait for Google Identity Services (GIS) library
+    while ((typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) && Date.now() - start < maxWait) {
+        await new Promise(r => setTimeout(r, 200));
+    }
+    if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) {
+        console.warn('Google Identity Services not available; Google Tasks integration disabled.');
+        return;
+    }
 
-            tasksClientInitialized = true;
-
-            // Initialize the Token Client
-            tokenClient = google.accounts.oauth2.initTokenClient({
-                client_id: TASKS_CLIENT_ID,
-                scope: TASKS_SCOPES,
-                callback: (tokenResponse) => {
-                    if (tokenResponse && tokenResponse.access_token) {
-                        tasksSignedIn = true;
-                        accessToken = tokenResponse.access_token;
-
-                        // Save token (expires_in is usually 3599 seconds)
-                        const expiresIn = tokenResponse.expires_in || 3599;
-                        const expiryTime = Date.now() + (expiresIn * 1000);
-                        localStorage.setItem('portal_tasks_token', accessToken);
-                        localStorage.setItem('portal_tasks_token_expiry', expiryTime);
-
-                        updateTasksAuthUI();
-                        fetchGoogleTasksIntoTodos();
-                    }
-                },
-            });
-
-            restoreTasksSession();
-            updateTasksAuthUI();
-        } catch (e) {
-            console.error('Failed to initialize Google Tasks client', e);
-            updateTasksStatus('Google Tasks setup failed; using local to‑dos only.', 'error');
-        }
+    // Load gapi client module
+    await new Promise((resolve, reject) => {
+        gapi.load('client', { callback: resolve, onerror: reject });
     });
+
+    try {
+        // Initialize gapi client with API key only (no discoveryDocs here)
+        await gapi.client.init({
+            apiKey: TASKS_API_KEY,
+        });
+
+        // Load the Tasks API discovery doc separately
+        await gapi.client.load('tasks', 'v1');
+
+        tasksClientInitialized = true;
+
+        // Initialize the Token Client via GIS
+        tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: TASKS_CLIENT_ID,
+            scope: TASKS_SCOPES,
+            callback: (tokenResponse) => {
+                if (tokenResponse && tokenResponse.access_token) {
+                    tasksSignedIn = true;
+                    accessToken = tokenResponse.access_token;
+
+                    // Save token (expires_in is usually 3599 seconds)
+                    const expiresIn = tokenResponse.expires_in || 3599;
+                    const expiryTime = Date.now() + (expiresIn * 1000);
+                    localStorage.setItem('portal_tasks_token', accessToken);
+                    localStorage.setItem('portal_tasks_token_expiry', expiryTime);
+
+                    updateTasksAuthUI();
+                    fetchGoogleTasksIntoTodos();
+                }
+            },
+        });
+
+        restoreTasksSession();
+        updateTasksAuthUI();
+    } catch (e) {
+        console.error('Failed to initialize Google Tasks client', e);
+        updateTasksStatus('Google Tasks setup failed; using local to‑dos only.', 'error');
+    }
 }
 
 async function fetchGoogleTasksIntoTodos() {
