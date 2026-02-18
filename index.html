@@ -143,7 +143,7 @@
                 <!-- Version Badge -->
                 <div
                     class="text-[9px] text-slate-400 dark:text-slate-500 font-bold px-2 py-1 rounded-md bg-white/50 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm whitespace-nowrap uppercase tracking-widest">
-                    v3.0 Beta</div>
+                    v2.0 Beta</div>
                 <!-- Auth Status -->
                 <div id="auth-container" class="flex items-center gap-3 flex-wrap justify-center md:justify-end">
                     <div id="user-info"
@@ -445,70 +445,80 @@
                     </button>
                 </div>
 
-                <!-- Sticky Top Bar for Sections, Submit, and Filters -->
-                <div
-                    class="sticky top-4 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-slate-700/50 p-2 shadow-lg shadow-slate-900/5 space-y-3 transition-all duration-300">
-                    <div class="flex items-center justify-between flex-wrap gap-4 px-2">
-                        <div class="flex gap-2 overflow-x-auto pb-1 custom-scrollbar flex-1 no-scrollbar"
-                            id="section-tabs"></div>
-                        <button onclick="submitAllAttempted()"
-                            class="text-xs bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-4 py-2 rounded-lg font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition whitespace-nowrap uppercase tracking-wide">
-                            Submit Section
-                        </button>
-                        <button id="btn-toggle-pdf" onclick="togglePdfView()"
-                            class="hidden text-xs bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-rose-800 px-3 py-2 rounded-lg font-bold hover:bg-rose-100 dark:hover:bg-rose-900/50 transition whitespace-nowrap uppercase tracking-wide gap-1 items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                            </svg>
-                            View PDF
-                        </button>
+            </div>
+            <!-- Sticky Top Bar for Sections, Submit, and Filters -->
+            <div
+                class="sticky top-4 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-slate-700/50 p-2 shadow-lg shadow-slate-900/5 space-y-3 transition-all duration-300">
+                <div class="flex items-center justify-between flex-wrap gap-4 px-2">
+                    <div class="flex gap-2 overflow-x-auto pb-1 custom-scrollbar flex-1 no-scrollbar" id="section-tabs">
                     </div>
+                    <button onclick="submitAllAttempted()"
+                        class="text-xs bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-4 py-2 rounded-lg font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition whitespace-nowrap uppercase tracking-wide">
+                        Submit Section
+                    </button>
+                    <button id="btn-toggle-pdf" onclick="togglePdfView()"
+                        class="hidden text-xs bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-rose-800 px-3 py-2 rounded-lg font-bold hover:bg-rose-100 dark:hover:bg-rose-900/50 transition whitespace-nowrap uppercase tracking-wide gap-1 items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                        View PDF
+                    </button>
+                    <button id="btn-view-solutions" onclick="openSolutionPdf()"
+                        class="hidden text-xs bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-3 py-2 rounded-lg font-bold hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition whitespace-nowrap uppercase tracking-wide gap-1 items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Solutions
+                    </button>
+                </div>
 
-                    <!-- Sorting/Filters Row -->
-                    <div class="flex flex-wrap items-center gap-2 px-2 pb-1">
-                        <span
-                            class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mr-2 flex items-center gap-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                            </svg>
-                            Filters
-                        </span>
-                        <button onclick="toggleFilter('wrong')" id="filter-wrong"
-                            class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
-                            Wrong
-                        </button>
-                        <button onclick="toggleFilter('unattempted')" id="filter-unattempted"
-                            class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
-                            Unattempted
-                        </button>
-                        <button onclick="toggleFilter('marked')" id="filter-marked"
-                            class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
-                            Marked
-                        </button>
-                        <button onclick="toggleFilter('starred')" id="filter-starred"
-                            class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95 flex items-center gap-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-amber-500" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                            Starred
-                        </button>
-                        <button onclick="clearFilters()" id="filter-clear"
-                            class="hidden text-[10px] px-3 py-1 rounded-full text-rose-500 font-bold hover:bg-rose-50 dark:hover:bg-rose-900/20 transition ml-auto uppercase tracking-wide">
-                            Reset
-                        </button>
-                    </div>
+                <!-- Sorting/Filters Row -->
+                <div class="flex flex-wrap items-center gap-2 px-2 pb-1">
+                    <span
+                        class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mr-2 flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                        </svg>
+                        Filters
+                    </span>
+                    <button onclick="toggleFilter('wrong')" id="filter-wrong"
+                        class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
+                        Wrong
+                    </button>
+                    <button onclick="toggleFilter('unattempted')" id="filter-unattempted"
+                        class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
+                        Unattempted
+                    </button>
+                    <button onclick="toggleFilter('marked')" id="filter-marked"
+                        class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
+                        Marked
+                    </button>
+                    <button onclick="toggleFilter('starred')" id="filter-starred"
+                        class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95 flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-amber-500" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        Starred
+                    </button>
+                    <button onclick="clearFilters()" id="filter-clear"
+                        class="hidden text-[10px] px-3 py-1 rounded-full text-rose-500 font-bold hover:bg-rose-50 dark:hover:bg-rose-900/20 transition ml-auto uppercase tracking-wide">
+                        Reset
+                    </button>
                 </div>
             </div>
 
             <div class="flex flex-col lg:flex-row gap-6 relative">
                 <!-- PDF Viewer Container (Hidden by default) -->
-                <div id="pdf-container" class="hidden lg:w-3/4 h-[85vh] sticky top-24 transition-all duration-300">
+                <div id="pdf-container"
+                    class="hidden lg:w-3/4 h-[calc(100vh-10rem)] sticky top-36 transition-all duration-300">
                     <div
                         class="glass h-full rounded-2xl overflow-auto custom-scrollbar shadow-xl border border-slate-200/50 dark:border-slate-700/50 flex flex-col relative group">
                         <!-- Controls Overlay -->
@@ -549,15 +559,7 @@
                         </div>
 
                         <!-- View Solutions Button -->
-                        <button id="btn-view-solutions" onclick="openSolutionPdf()"
-                            class="absolute bottom-6 left-6 z-20 hidden items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-bold hover:scale-105 hover:shadow-lg transition-all duration-300 shadow-md">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            View Solutions
-                        </button>
+
                     </div>
                 </div>
 
