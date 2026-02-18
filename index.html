@@ -119,7 +119,7 @@
         Saved ✓
     </div>
 
-    <div id="app" class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <div id="app" class="w-full px-6 py-8">
         <!-- Navigation Header -->
         <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
             <div id="header-left" class="flex items-center gap-4">
@@ -143,7 +143,7 @@
                 <!-- Version Badge -->
                 <div
                     class="text-[9px] text-slate-400 dark:text-slate-500 font-bold px-2 py-1 rounded-md bg-white/50 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm whitespace-nowrap uppercase tracking-widest">
-                    v2.0 Beta</div>
+                    v3.0 Beta</div>
                 <!-- Auth Status -->
                 <div id="auth-container" class="flex items-center gap-3 flex-wrap justify-center md:justify-end">
                     <div id="user-info"
@@ -430,8 +430,20 @@
             </div>
 
             <div id="test-workspace-header" class="space-y-4">
-                <h2 id="active-test-title" class="text-3xl font-black text-slate-900 dark:text-white leading-tight">
-                </h2>
+                <div class="flex items-center gap-3">
+                    <h2 id="active-test-title" class="text-3xl font-black text-slate-900 dark:text-white leading-tight">
+                    </h2>
+                    <button onclick="openEditTest(activeTestId)"
+                        class="p-2 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition group"
+                        title="Edit Test Details">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5 group-hover:scale-110 transition-transform" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path
+                                d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                        </svg>
+                    </button>
+                </div>
 
                 <!-- Sticky Top Bar for Sections, Submit, and Filters -->
                 <div
@@ -442,6 +454,15 @@
                         <button onclick="submitAllAttempted()"
                             class="text-xs bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-4 py-2 rounded-lg font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition whitespace-nowrap uppercase tracking-wide">
                             Submit Section
+                        </button>
+                        <button id="btn-toggle-pdf" onclick="togglePdfView()"
+                            class="hidden text-xs bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-rose-800 px-3 py-2 rounded-lg font-bold hover:bg-rose-100 dark:hover:bg-rose-900/50 transition whitespace-nowrap uppercase tracking-wide gap-1 items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            View PDF
                         </button>
                     </div>
 
@@ -485,7 +506,67 @@
                 </div>
             </div>
 
-            <div id="question-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 pb-20">
+            <div class="flex flex-col lg:flex-row gap-6 relative">
+                <!-- PDF Viewer Container (Hidden by default) -->
+                <div id="pdf-container" class="hidden lg:w-3/4 h-[85vh] sticky top-24 transition-all duration-300">
+                    <div
+                        class="glass h-full rounded-2xl overflow-auto custom-scrollbar shadow-xl border border-slate-200/50 dark:border-slate-700/50 flex flex-col relative group">
+                        <!-- Controls Overlay -->
+                        <div
+                            class="absolute top-4 right-4 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <button onclick="zoomPdf(0.2)"
+                                class="p-2 bg-slate-900/80 hover:bg-slate-900 text-white rounded-lg backdrop-blur-sm shadow-lg hover:scale-105 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <button onclick="zoomPdf(-0.2)"
+                                class="p-2 bg-slate-900/80 hover:bg-slate-900 text-white rounded-lg backdrop-blur-sm shadow-lg hover:scale-105 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <button onclick="togglePdfView()"
+                                class="p-2 bg-rose-500/80 hover:bg-rose-600 text-white rounded-lg backdrop-blur-sm shadow-lg hover:scale-105 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <iframe id="pdf-frame" class="w-full h-full bg-slate-50 dark:bg-slate-900" src=""
+                            frameborder="0" allow="autoplay">
+                        </iframe>
+                        <div id="pdf-placeholder"
+                            class="hidden absolute inset-0 flex items-center justify-center bg-slate-50 dark:bg-slate-800 text-slate-400">
+                            <p class="text-sm">No PDF assigned</p>
+                        </div>
+
+                        <!-- View Solutions Button -->
+                        <button id="btn-view-solutions" onclick="openSolutionPdf()"
+                            class="absolute bottom-6 left-6 z-20 hidden items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-bold hover:scale-105 hover:shadow-lg transition-all duration-300 shadow-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            View Solutions
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Questions Grid -->
+                <div id="question-grid-container" class="w-full transition-all duration-300">
+                    <div id="question-grid"
+                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 pb-20">
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -606,12 +687,57 @@
                         class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400">
                     <p class="text-[11px] text-slate-400 mt-2 font-medium">Leave blank for Uncategorised.</p>
                 </div>
+                <div>
+                    <label
+                        class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">Reference
+                        PDF Link</label>
+                    <input type="text" id="edit-test-pdf" placeholder="Paste Google Drive Share Link..."
+                        class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400">
+                    <p class="text-[11px] text-slate-400 mt-2 font-medium">Link must be publicly accessible (Anyone with
+                        link).</p>
+                </div>
+                <div>
+                    <label
+                        class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">Solution
+                        PDF Link</label>
+                    <input type="text" id="edit-test-solution-pdf" placeholder="Paste Google Drive Share Link..."
+                        class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400">
+                </div>
             </div>
             <div class="flex gap-3 mt-8">
                 <button onclick="closeModal('editTestModal')"
                     class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 py-3 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition">Cancel</button>
                 <button onclick="saveTestEdits()"
                     class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all duration-300">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Solution PDF Modal -->
+    <div id="solutionPdfModal"
+        class="fixed inset-0 bg-slate-900/80 dark:bg-black/90 backdrop-blur-sm hidden items-center justify-center z-[70] p-4 transition-all duration-300">
+        <div
+            class="glass dark:bg-slate-900/95 rounded-3xl w-full max-w-5xl h-[90vh] flex flex-col relative card-shadow border border-slate-200/50 dark:border-slate-700/50 animate-scale-in">
+            <div class="flex items-center justify-between p-4 border-b border-slate-200/50 dark:border-slate-700/50">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-500" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Solutions
+                </h3>
+                <button onclick="closeModal('solutionPdfModal')"
+                    class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+            <div class="flex-1 bg-slate-100 dark:bg-slate-900 relative">
+                <iframe id="solution-pdf-frame" class="w-full h-full" src="" frameborder="0"></iframe>
             </div>
         </div>
     </div>
@@ -1118,6 +1244,30 @@
             renderLibrary();
         }
 
+        function getEmbedLink(link) {
+            if (!link) return '';
+            try {
+                let id = '';
+                // Extract ID from standard Google Drive URLs
+                // Pattern 1: .../file/d/FILE_ID/...
+                if (link.includes('/file/d/')) {
+                    id = link.split('/file/d/')[1].split('/')[0];
+                }
+                // Pattern 2: ...?id=FILE_ID...
+                else if (link.includes('id=')) {
+                    id = link.split('id=')[1].split('&')[0];
+                }
+
+                if (id) {
+                    return `https://drive.google.com/file/d/${id}/preview`;
+                }
+                return link; // Fallback to original if ID extraction fails
+            } catch (e) {
+                console.warn("Error parsing PDF link:", e);
+                return link;
+            }
+        }
+
         function openTest(id) {
             try {
                 activeTestId = id;
@@ -1125,6 +1275,53 @@
                 document.getElementById('view-home').classList.add('hidden');
                 document.getElementById('view-test').classList.remove('hidden');
                 document.getElementById('active-test-title').innerText = test.title;
+
+                // Handle PDF Button
+                const pdfBtn = document.getElementById('btn-toggle-pdf');
+                const solutionsBtn = document.getElementById('btn-view-solutions');
+                const pdfFrame = document.getElementById('pdf-frame');
+                const pdfContainer = document.getElementById('pdf-container');
+                const gridContainer = document.getElementById('question-grid-container');
+                const grid = document.getElementById('question-grid');
+
+                // Reset View
+
+                // Hide PDF
+                pdfContainer.classList.add('hidden');
+
+                // Expand Grid
+                gridContainer.classList.add('w-full');
+                gridContainer.classList.remove('lg:w-1/4', 'lg:w-1/2');
+
+                // Restore Grid Columns
+                grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 pb-20';
+
+
+                if (test.pdfLink) {
+                    pdfBtn.classList.remove('hidden');
+                    pdfBtn.classList.add('flex');
+                    // Pre-convert link to embeddable preview format
+                    const embedUrl = getEmbedLink(test.pdfLink);
+
+                    // Only reload if the source is different to preserve scroll state
+                    const currentSrc = pdfFrame.getAttribute('src');
+                    if (currentSrc !== embedUrl) {
+                        pdfFrame.src = embedUrl;
+                    }
+
+                    // Handle Solution PDF Button visibility
+                    if (test.solutionPdfLink) {
+                        solutionsBtn.classList.remove('hidden');
+                        solutionsBtn.classList.add('flex');
+                    } else {
+                        solutionsBtn.classList.add('hidden');
+                        solutionsBtn.classList.remove('flex');
+                    }
+                } else {
+                    pdfBtn.classList.add('hidden');
+                    pdfBtn.classList.remove('flex');
+                    pdfFrame.src = '';
+                }
 
                 if (test.timerRunning) {
                     const now = Date.now();
@@ -1148,6 +1345,116 @@
             } catch (err) {
                 console.error("Failed to open test", err);
                 goHome();
+            }
+        }
+
+
+
+        function openSolutionPdf() {
+            if (!activeTestId || !library[activeTestId] || !library[activeTestId].solutionPdfLink) return;
+
+            const url = getEmbedLink(library[activeTestId].solutionPdfLink);
+            const frame = document.getElementById('solution-pdf-frame');
+
+            // Only reload if the source is different to preserve scroll state
+            const currentSrc = frame.getAttribute('src');
+            if (currentSrc !== url) {
+                if (frame) frame.src = url;
+            }
+
+            const modal = document.getElementById('solutionPdfModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        let currentZoom = 1;
+
+        function zoomPdf(change) {
+            const frame = document.getElementById('pdf-frame');
+            if (!frame) return;
+            currentZoom += change;
+            if (currentZoom < 0.5) currentZoom = 0.5;
+            if (currentZoom > 3) currentZoom = 3;
+
+            frame.style.transform = `scale(${currentZoom})`;
+            frame.style.transformOrigin = 'top left';
+            // Increase container size to match scale so it scrolls properly
+            frame.style.width = `${100 * currentZoom}%`;
+            frame.style.height = `${100 * currentZoom}%`;
+            // Actually for scale transform, we might want to just keep w-full h-full and let scale handle visual
+            // But to scroll, the element must be physically larger.
+            // A better approach for iframe zoom without altering flow might be just transforming
+            // and ensuring parent overflows.
+            // Let's reset width/height to 100% and just use scale, but we need a wrapper if we want to scroll *to* the zoomed parts?
+            // Simplified:
+            frame.style.width = `${100}%`;
+            frame.style.height = `${100}%`;
+            // Wait, if we scale(2), it looks 2x bigger. If the container is overflow-auto, we want scrollbars.
+            // transform does not affect layout flow by default.
+            // We need to set the browser to treat it as larger. 
+            // Let's try just setting width/height directly for the iframe instead of transform?
+            // No, iframe content doesn't always reflow.
+            // Let's stick to transform but we need a wrapper to expand.
+            // For now, let's just try simple scale and prompt user if it cuts off, 
+            // OR simply:
+            frame.style.width = `${100 / currentZoom}%`;
+            frame.style.height = `${100 / currentZoom}%`;
+            frame.style.transform = `scale(${currentZoom})`;
+            // If we make it smaller physically but scale it up, it fills the original space "zoomed in".
+            // If we want scrollbars, we need the container to see a larger element.
+
+            // Re-think: Simplest zoom for iframes often is just width/height percentages if the source relies on viewport.
+            // If it's a PDF Viewer (Chrome built-in), it has its own zoom usually but we can't access it cross-origin.
+            // If we transform:scale(1.5), the element looks 1.5x bigger.
+            // If we want to scroll, we need the parent to scroll.
+            // Let's try the transform approach with origin top-left.
+        }
+
+        function togglePdfView() {
+            const pdfContainer = document.getElementById('pdf-container');
+            const gridContainer = document.getElementById('question-grid-container');
+            const grid = document.getElementById('question-grid');
+            const btn = document.getElementById('btn-toggle-pdf');
+
+            const isHidden = pdfContainer.classList.contains('hidden');
+
+            if (isHidden) {
+                // Show PDF
+                pdfContainer.classList.remove('hidden');
+
+                // Shrink Grid
+                gridContainer.classList.remove('w-full');
+                gridContainer.classList.add('lg:w-1/4'); // Make it even smaller to give PDF more room
+
+                // Adjust grid columns for narrower space - FORCE SINGLE COLUMN
+                grid.className = 'grid grid-cols-1 gap-6 pb-20'; // Removed all responsive cols
+
+                btn.classList.add('bg-indigo-100', 'text-indigo-700', 'dark:bg-indigo-900', 'dark:text-indigo-200');
+                btn.classList.remove('bg-rose-50', 'text-rose-600');
+
+                // Reset zoom on open
+                currentZoom = 1;
+                const frame = document.getElementById('pdf-frame');
+                if (frame) {
+                    frame.style.transform = 'scale(1)';
+                    frame.style.width = '100%';
+                    frame.style.height = '100%';
+                }
+            } else {
+                // Hide PDF
+                pdfContainer.classList.add('hidden');
+
+                // Expand Grid
+                gridContainer.classList.add('w-full');
+                gridContainer.classList.remove('lg:w-1/4', 'lg:w-1/2');
+
+                // Restore Grid Columns
+                grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 pb-20';
+
+                btn.classList.remove('bg-indigo-100', 'text-indigo-700', 'dark:bg-indigo-900', 'dark:text-indigo-200');
+                btn.classList.add('bg-rose-50', 'text-rose-600');
             }
         }
 
@@ -1333,8 +1640,13 @@
             editingTestId = id;
             const titleInput = document.getElementById('edit-test-title');
             const subjectInput = document.getElementById('edit-test-subject');
+            const pdfInput = document.getElementById('edit-test-pdf');
+            const solutionPdfInput = document.getElementById('edit-test-solution-pdf');
+
             if (titleInput) titleInput.value = test.title || '';
             if (subjectInput) subjectInput.value = test.subject || '';
+            if (pdfInput) pdfInput.value = test.pdfLink || '';
+            if (solutionPdfInput) solutionPdfInput.value = test.solutionPdfLink || '';
 
             const modal = document.getElementById('editTestModal');
             if (modal) {
@@ -1352,15 +1664,64 @@
             const test = library[editingTestId];
             const titleInput = document.getElementById('edit-test-title');
             const subjectInput = document.getElementById('edit-test-subject');
+            const pdfInput = document.getElementById('edit-test-pdf');
+            const solutionPdfInput = document.getElementById('edit-test-solution-pdf');
 
             const newTitle = titleInput ? titleInput.value.trim() : '';
             const newSubject = subjectInput ? subjectInput.value.trim() : '';
+            const newPdf = pdfInput ? pdfInput.value.trim() : '';
+            const newSolutionPdf = solutionPdfInput ? solutionPdfInput.value.trim() : '';
 
             if (newTitle) test.title = newTitle;
             test.subject = newSubject || '';
+            const oldPdf = test.pdfLink;
+            test.pdfLink = newPdf || '';
+
+            const oldSolutionPdf = test.solutionPdfLink;
+            test.solutionPdfLink = newSolutionPdf || '';
 
             saveAndSync();
             renderLibrary();
+
+            // If currently viewing this test, update the UI immediately
+            if (activeTestId === editingTestId) {
+                document.getElementById('active-test-title').innerText = test.title;
+
+                const pdfBtn = document.getElementById('btn-toggle-pdf');
+                const pdfFrame = document.getElementById('pdf-frame');
+
+                if (test.pdfLink) {
+                    pdfBtn.classList.remove('hidden');
+                    pdfBtn.classList.add('flex');
+                    // Reload frame only if link actually changed
+                    if (oldPdf !== test.pdfLink) {
+                        const embedUrl = getEmbedLink(test.pdfLink);
+                        pdfFrame.src = embedUrl;
+                    }
+
+                    // Update Solution Button Visibility
+                    const solutionsBtn = document.getElementById('btn-view-solutions');
+                    if (solutionsBtn) {
+                        if (test.solutionPdfLink) {
+                            solutionsBtn.classList.remove('hidden');
+                            solutionsBtn.classList.add('flex');
+                        } else {
+                            solutionsBtn.classList.add('hidden');
+                            solutionsBtn.classList.remove('flex');
+                        }
+                    }
+                } else {
+                    pdfBtn.classList.add('hidden');
+                    pdfBtn.classList.remove('flex');
+                    // Hide container if it was open
+                    const pdfContainer = document.getElementById('pdf-container');
+                    if (!pdfContainer.classList.contains('hidden')) {
+                        togglePdfView(); // Close it
+                    }
+                    pdfFrame.src = '';
+                }
+            }
+
             closeModal('editTestModal');
             editingTestId = null;
         }
