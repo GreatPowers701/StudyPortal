@@ -189,7 +189,7 @@ function renderLibrary() {
                 const subjectLabel = (test.subject && String(test.subject).trim()) ? String(test.subject).trim() : 'Uncategorised';
 
                 const card = document.createElement('div');
-                card.className = 'glass p-6 rounded-3xl cursor-pointer relative group transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/10 dark:hover:shadow-indigo-900/10 border-slate-100 dark:border-slate-800';
+                card.className = 'glass p-6 rounded-3xl cursor-pointer relative group transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/10 dark:hover:shadow-indigo-900/10 border border-slate-100 dark:border-slate-800';
                 card.onclick = () => openTest(id);
 
                 // Card Header Background Gradient (Optional subtle touch)
@@ -453,16 +453,29 @@ function deleteTest(id) {
 // --- Render Workspace ---
 function renderSectionTabs(sections) {
     const container = document.getElementById('section-tabs');
-    if (!container) return;
-    container.innerHTML = '';
-    sections.forEach(s => {
-        const btn = document.createElement('button');
-        btn.className = `px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap border border-transparent transition-all duration-300 uppercase tracking-wide`;
-        btn.id = `tab-${s.replace(/\s/g, '-')}`;
-        btn.innerText = s;
-        btn.onclick = () => loadSection(s);
-        container.appendChild(btn);
-    });
+    const dropdown = document.getElementById('section-dropdown');
+
+    if (container) {
+        container.innerHTML = '';
+        sections.forEach(s => {
+            const btn = document.createElement('button');
+            btn.className = `px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap border border-transparent transition-all duration-300 uppercase tracking-wide`;
+            btn.id = `tab-${s.replace(/\s/g, '-')}`;
+            btn.innerText = s;
+            btn.onclick = () => loadSection(s);
+            container.appendChild(btn);
+        });
+    }
+
+    if (dropdown) {
+        dropdown.innerHTML = '';
+        sections.forEach(s => {
+            const option = document.createElement('option');
+            option.value = s;
+            option.innerText = s;
+            dropdown.appendChild(option);
+        });
+    }
 }
 
 function loadSection(sName) {
@@ -475,6 +488,11 @@ function loadSection(sName) {
     if (activeTab) {
         activeTab.classList.add('bg-white', 'dark:bg-slate-800', 'text-indigo-600', 'dark:text-indigo-400', 'border-slate-200', 'dark:border-slate-700', 'shadow-md', 'scale-105');
         activeTab.classList.remove('text-slate-500', 'dark:text-slate-400', 'hover:bg-slate-100', 'dark:hover:bg-slate-800/50');
+    }
+
+    const dropdown = document.getElementById('section-dropdown');
+    if (dropdown) {
+        dropdown.value = sName;
     }
 
     renderQuestions();
