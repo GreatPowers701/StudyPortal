@@ -205,10 +205,11 @@
 
         <!-- View: Home Screen -->
         <main id="view-home" class="space-y-8 animate-fade-in">
-            <!-- Top Row: Add Test + To-Do (stacked on mobile, side-by-side on larger screens) -->
-            <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            <!-- Top Row: Add Test + To-Do + Quick Links (3 columns) -->
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
                 <!-- Upload Section -->
-                <div class="glass p-8 rounded-3xl card-shadow text-center relative overflow-hidden group">
+                <div
+                    class="glass p-8 rounded-3xl card-shadow text-center relative overflow-hidden group h-full flex flex-col justify-center">
                     <div
                         class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition duration-500">
                     </div>
@@ -224,32 +225,32 @@
                         </div>
                         <h2 class="text-xl font-bold mb-2 dark:text-white">Add New Test</h2>
                         <p class="text-slate-500 dark:text-slate-400 text-sm mb-6 max-w-sm mx-auto">Upload a JSON answer
-                            key to create a new practice session and track your progress.</p>
+                            key to create a new practice session.</p>
 
-                        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
-                            <div class="w-full sm:w-72 space-y-3">
-                                <input type="text" id="newTestTitle" placeholder="Test Title (e.g. Physics Mock 1)"
+                        <div class="flex flex-col gap-3 mb-6 w-full">
+                            <input type="text" id="newTestTitle" placeholder="Test Title"
+                                class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm">
+                            <div class="flex gap-2">
+                                <input type="text" id="newTestSubject" placeholder="Subject"
                                     class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm">
-                                <input type="text" id="newTestSubject" placeholder="Subject (optional, e.g. Physics)"
-                                    class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm">
+                                <input type="file" id="newTestFile" accept=".json" class="hidden">
+                                <button onclick="document.getElementById('newTestFile').click()"
+                                    class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 whitespace-nowrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    Upload
+                                </button>
                             </div>
-                            <input type="file" id="newTestFile" accept=".json" class="hidden">
-                            <button onclick="document.getElementById('newTestFile').click()"
-                                class="w-full sm:w-auto self-stretch sm:self-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                                Upload
-                            </button>
                         </div>
 
                         <div class="pt-5 border-t border-slate-200/50 dark:border-slate-700/50">
                             <button onclick="copyExtractionPrompt()"
-                                class="text-xs text-slate-500 dark:text-slate-400 font-semibold hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-2 mx-auto group/btn">
-                                <span class="group-hover/btn:underline decoration-blue-400/50 underline-offset-4">Need
-                                    to extract answers from images?</span>
+                                class="text-xs text-slate-500 dark:text-slate-400 font-semibold hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-2 mx-auto group/btn justify-center">
+                                <span class="group-hover/btn:underline decoration-blue-400/50 underline-offset-4">Copy
+                                    Extraction Prompt</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -260,8 +261,9 @@
                     </div>
                 </div>
 
-                <!-- To-Do List Section (Google Tasks) -->
-                <div class="glass p-8 rounded-3xl card-shadow relative overflow-hidden h-full flex flex-col">
+                <!-- To-Do List Section -->
+                <div
+                    class="glass p-8 rounded-3xl card-shadow relative overflow-hidden h-full flex flex-col min-h-[400px]">
                     <div class="flex items-center justify-between gap-3 mb-4">
                         <div class="flex items-center gap-3">
                             <div
@@ -276,25 +278,27 @@
                         </div>
                         <button id="tasks-connect-btn" onclick="handleTasksAuthClick()"
                             class="text-xs bg-white/50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg font-semibold hover:bg-white dark:hover:bg-slate-800 transition whitespace-nowrap backdrop-blur-sm">
-                            Connect Google Tasks
+                            Connect Google
                         </button>
                     </div>
 
                     <div id="tasks-status"
-                        class="text-[11px] mb-4 font-medium px-3 py-1.5 rounded-lg bg-amber-50/50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30 inline-block self-start">
-                        Google Tasks not connected. You can still add local to‑dos.
+                        class="text-[10px] mb-4 font-medium px-3 py-1.5 rounded-lg bg-amber-50/50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30 inline-block self-start">
+                        Not connected
                     </div>
 
                     <!-- Add To-Do -->
-                    <div class="flex flex-col sm:flex-row gap-2 mb-6">
+                    <div class="flex flex-col gap-2 mb-4">
                         <input id="todo-input" type="text" placeholder="New task..."
-                            class="glass-input flex-1 px-4 py-2.5 rounded-xl text-sm text-slate-900 dark:text-white outline-none placeholder:text-slate-400">
-                        <input id="todo-due-date" type="date"
-                            class="glass-input px-4 py-2.5 rounded-xl text-sm text-slate-900 dark:text-white outline-none">
-                        <button onclick="addTodo()"
-                            class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-800 dark:hover:bg-slate-200 transition shadow-lg whitespace-nowrap">
-                            Add
-                        </button>
+                            class="glass-input w-full px-4 py-2.5 rounded-xl text-sm text-slate-900 dark:text-white outline-none placeholder:text-slate-400">
+                        <div class="flex gap-2">
+                            <input id="todo-due-date" type="date"
+                                class="glass-input flex-1 px-4 py-2.5 rounded-xl text-sm text-slate-900 dark:text-white outline-none">
+                            <button onclick="addTodo()"
+                                class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-800 dark:hover:bg-slate-200 transition shadow-lg whitespace-nowrap">
+                                Add
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Task List -->
@@ -304,10 +308,53 @@
                     </div>
 
                     <div
-                        class="mt-5 pt-3 border-t border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wider">
+                        class="mt-auto pt-3 border-t border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wider">
                         <span id="todo-count">0 tasks</span>
                         <button onclick="clearCompletedTodos()" class="hover:text-rose-500 transition">Clear
                             completed</button>
+                    </div>
+                </div>
+
+                <!-- Quick Links Card -->
+                <div
+                    class="glass p-8 rounded-3xl card-shadow relative overflow-hidden h-full flex flex-col group min-h-[400px]">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition duration-500">
+                    </div>
+
+                    <div class="relative z-10 flex flex-col h-full">
+                        <div class="flex items-center justify-between gap-3 mb-6">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center shadow-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                    </svg>
+                                </div>
+                                <h2 class="text-xl font-bold dark:text-white">Quick Links</h2>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="quick-links-count"
+                                    class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider bg-white/50 dark:bg-slate-800/50 px-2 py-1 rounded-md">0</span>
+                                <button onclick="openAddLinkModal()"
+                                    class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-500 transition shadow-sm"
+                                    title="Add Link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4v16m8-8H4" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Links List -->
+                        <div id="quick-links-list"
+                            class="flex-1 space-y-2 overflow-y-auto custom-scrollbar pr-1 max-h-[300px]">
+                            <!-- Links rendered here -->
+                        </div>
                     </div>
                 </div>
             </section>
@@ -751,6 +798,41 @@
         </div>
     </div>
 
+    <!-- Add Link Modal -->
+    <div id="addLinkModal"
+        class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all duration-300">
+        <div
+            class="glass dark:bg-slate-900/95 rounded-3xl max-w-sm w-full p-8 relative card-shadow border border-slate-200/50 dark:border-slate-700/50 animate-scale-in">
+            <button onclick="closeModal('addLinkModal')"
+                class="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                </svg>
+            </button>
+            <h3 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white">Add Quick Link</h3>
+            <div class="space-y-4">
+                <div>
+                    <label
+                        class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">Name</label>
+                    <input type="text" id="modal-link-name" placeholder="e.g. Google"
+                        class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400">
+                </div>
+                <div>
+                    <label
+                        class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">URL</label>
+                    <input type="text" id="modal-link-url" placeholder="e.g. google.com"
+                        class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400">
+                </div>
+            </div>
+            <button onclick="saveQuickLinkFromModal()"
+                class="mt-8 w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-3.5 rounded-xl font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+                Add Link
+            </button>
+        </div>
+    </div>
+
     <!-- Timer End Notification -->
     <div id="timerEndModal"
         class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm hidden items-center justify-center z-[60] p-4 transition-all duration-300">
@@ -780,6 +862,7 @@
     <script src="js/timer.js"></script>
     <script src="js/library.js"></script>
     <script src="js/todos.js"></script>
+    <script src="js/quicklinks.js"></script>
 
     <!-- App Initialization -->
     <script>
@@ -790,6 +873,8 @@
             loadLocalTodos();
             renderTodos();
             initializeGoogleTasksClient();
+            loadQuickLinks();
+            renderQuickLinks();
         };
     </script>
 </body>
