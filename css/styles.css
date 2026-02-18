@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-attachment: fixed;
+}
+
+/* Modern Glassmorphism */
+.glass {
+    @apply bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-lg;
+}
+
+.glass-hover {
+    @apply hover:bg-white/80 dark:hover:bg-slate-900/80 transition duration-300;
+}
+
+.card-shadow {
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+/* Input & Button Base Styles */
+.glass-input {
+    @apply bg-white/50 dark:bg-black/20 border border-slate-200/60 dark:border-white/10 backdrop-blur-sm focus:bg-white/80 dark:focus:bg-black/40 transition-all duration-300;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-slate-300/50 dark:bg-slate-600/50 rounded-full hover:bg-slate-400/80 dark:hover:bg-slate-500/80 transition;
+}
+
+/* Animations */
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+/* Selection */
+::selection {
+    @apply bg-violet-500/30 text-violet-900 dark:text-violet-100;
+}
+
+/* Mark for review tint */
+.marked-tint {
+    @apply bg-indigo-50/80 dark:bg-indigo-900/40 border-indigo-400 dark:border-indigo-500 shadow-[0_0_25px_rgba(99,102,241,0.25)] !important;
+}
+
+/* Starred indicator glow */
+.starred-glow {
+    @apply border-amber-400 dark:border-amber-400 shadow-[0_0_30px_rgba(245,158,11,0.4)] !important;
+}
