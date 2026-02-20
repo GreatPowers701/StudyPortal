@@ -66,15 +66,30 @@ function setupFileUpload() {
 
 // --- Answer Comparison ---
 function compareAnswers(user, key) {
-    const cleanUser = Array.isArray(user) ? user.sort().join('') : user.trim().toUpperCase();
-    const cleanKey = key.toString().toUpperCase().trim();
-    if (cleanUser === cleanKey) return true;
+    const cleanUser = Array.isArray(user) ? user.slice().sort().join('').toUpperCase() : String(user).trim().toUpperCase();
+    const cleanKey = String(key).toUpperCase().trim();
+    if (cleanUser === cleanKey) return { correct: true, partial: false };
     const numUser = parseFloat(cleanUser);
     const numKey = parseFloat(cleanKey);
     if (!isNaN(numUser) && !isNaN(numKey)) {
-        return Math.abs(numUser - numKey) < 0.0001;
+        if (Math.abs(numUser - numKey) < 0.0001) {
+            return { correct: true, partial: false };
+        }
     }
-    return false;
+
+    // Check partial for multiple-choice (letters)
+    if (/^[A-Z]+$/.test(cleanKey) && /^[A-Z]+$/.test(cleanUser)) {
+        const userChars = new Set(cleanUser.split(''));
+        const keyChars = new Set(cleanKey.split(''));
+        let intersection = 0;
+        for (let char of userChars) {
+            if (keyChars.has(char)) intersection++;
+        }
+        if (intersection > 0) {
+            return { correct: false, partial: true };
+        }
+    }
+    return { correct: false, partial: false };
 }
 
 // --- Rendering Home ---
@@ -586,17 +601,24 @@ function renderQuestions() {
                 ${prog.submitted ? 'Submitted' : 'Submit Answer'}
             </button>`;
 
-            const feedback = `<div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/50 ${prog.submitted ? 'block' : 'hidden'} animate-fade-in">
-                ${prog.correct ?
-                    '<div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-sm"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg> Correct Answer</div>' :
-                    `<div class="flex items-start gap-2 text-rose-500 dark:text-rose-400 font-bold text-sm">
+            const feedback = `<div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/50 ${prog.submitted || prog.justAttemptedWrong ? 'block' : 'hidden'} animate-fade-in">
+                ${prog.submitted ? (
+                    prog.correct ?
+                        '<div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-sm"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg> Correct Answer</div>' :
+                        `<div class="flex items-start gap-2 text-rose-500 dark:text-rose-400 font-bold text-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
                         <div>
-                            <span>Incorrect</span>
+                            <span>${prog.partial ? 'Partially correct' : 'Incorrect'}</span>
                             <div class="text-slate-500 dark:text-slate-400 font-normal text-xs mt-1">Correct Answer: <span class="font-mono font-bold">${ans}</span></div>
                         </div>
                     </div>`
-                }
+                ) : (
+                    prog.justAttemptedWrong ?
+                        `<div class="flex items-center gap-2 text-amber-500 dark:text-amber-400 font-bold text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg> 
+                        ${prog.partialTryAgain ? 'Partially correct. Try again!' : 'Incorrect. Try again!'}
+                    </div>` : ''
+                )}
             </div>`;
 
             let noteHtml = '';
@@ -707,24 +729,32 @@ function deleteNote(qIdx) {
 
 function selectSingle(qIdx, val) {
     initSectionProgress();
-    const currentAns = library[activeTestId].progress[activeSection][qIdx].userAns;
-    library[activeTestId].progress[activeSection][qIdx].userAns = (currentAns === val) ? "" : val;
+    const q = library[activeTestId].progress[activeSection][qIdx];
+    if (q.submitted) return;
+    q.userAns = (q.userAns === val) ? "" : val;
+    q.justAttemptedWrong = false;
     renderQuestions();
 }
 
 function selectMulti(qIdx, val) {
     initSectionProgress();
-    let current = library[activeTestId].progress[activeSection][qIdx].userAns;
+    const q = library[activeTestId].progress[activeSection][qIdx];
+    if (q.submitted) return;
+    let current = q.userAns;
     if (!Array.isArray(current)) current = [];
     if (current.includes(val)) current = current.filter(x => x !== val);
     else current.push(val);
-    library[activeTestId].progress[activeSection][qIdx].userAns = current;
+    q.userAns = current;
+    q.justAttemptedWrong = false;
     renderQuestions();
 }
 
 function updateText(qIdx, val) {
     initSectionProgress();
-    library[activeTestId].progress[activeSection][qIdx].userAns = val;
+    const q = library[activeTestId].progress[activeSection][qIdx];
+    if (q.submitted) return;
+    q.userAns = val;
+    q.justAttemptedWrong = false;
 }
 
 function initSectionProgress() {
@@ -754,8 +784,21 @@ function submitQuestion(qIdx) {
         return;
     }
 
-    q.submitted = true;
-    q.correct = compareAnswers(q.userAns, actualAns);
+    const { correct, partial } = compareAnswers(q.userAns, actualAns);
+
+    if (!correct && !q.attempts) {
+        q.attempts = 1;
+        q.justAttemptedWrong = true;
+        q.partialTryAgain = partial;
+    } else {
+        q.submitted = true;
+        q.correct = correct;
+        q.partial = partial;
+        q.justAttemptedWrong = false;
+        q.partialTryAgain = false;
+        q.attempts = (q.attempts || 0) + 1;
+    }
+
     saveAndSync();
     renderQuestions();
 }
@@ -774,8 +817,19 @@ function submitAllAttempted() {
         if (q && !q.submitted) {
             const hasAns = Array.isArray(q.userAns) ? q.userAns.length > 0 : (q.userAns && q.userAns.toString().trim() !== "");
             if (hasAns) {
-                q.submitted = true;
-                q.correct = compareAnswers(q.userAns, ans);
+                const { correct, partial } = compareAnswers(q.userAns, ans);
+                if (!correct && !q.attempts) {
+                    q.attempts = 1;
+                    q.justAttemptedWrong = true;
+                    q.partialTryAgain = partial;
+                } else {
+                    q.submitted = true;
+                    q.correct = correct;
+                    q.partial = partial;
+                    q.justAttemptedWrong = false;
+                    q.partialTryAgain = false;
+                    q.attempts = (q.attempts || 0) + 1;
+                }
                 count++;
             }
         }
