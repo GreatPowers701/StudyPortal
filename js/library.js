@@ -539,6 +539,11 @@ function renderQuestions() {
                         ${idx + 1}
                     </span>
                     <div class="flex gap-2">
+                        <button onclick="editNote(${idx})" title="Add/Edit Note" class="p-1.5 rounded-full transition ${prog.note ? 'text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 shadow-sm' : 'text-slate-300 dark:text-slate-600 hover:text-amber-500 hover:bg-slate-100 dark:hover:bg-slate-800'}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
                         <button onclick="toggleStar(${idx})" class="p-1.5 rounded-full transition ${prog.starred ? 'text-amber-500 bg-amber-50 dark:bg-amber-900/30 shadow-sm' : 'text-slate-300 dark:text-slate-600 hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800'}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -594,7 +599,44 @@ function renderQuestions() {
                 }
             </div>`;
 
-            card.innerHTML = qHeader + inputHtml + submitBtn + feedback;
+            let noteHtml = '';
+            if (prog.isEditingNote) {
+                noteHtml = `
+                <div class="mt-4 relative animate-fade-in">
+                    <textarea id="note-input-${idx}" rows="2" placeholder="Type your note here..." class="glass-input w-full px-4 py-3 rounded-xl text-sm text-slate-900 dark:text-white outline-none placeholder:text-slate-400 resize-none">${prog.note || ''}</textarea>
+                    <div class="flex justify-end gap-2 mt-2">
+                        <button onclick="cancelNote(${idx})" class="text-xs px-3 py-1.5 rounded-lg font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Cancel</button>
+                        <button onclick="saveNote(${idx})" class="text-xs px-3 py-1.5 rounded-lg font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-sm transition">Save Note</button>
+                    </div>
+                </div>`;
+            } else if (prog.note) {
+                noteHtml = `
+                <div class="mt-4 p-3 bg-amber-50/50 dark:bg-amber-900/20 border border-amber-200/50 dark:border-amber-800/30 rounded-xl relative group">
+                    <div class="text-[10px] font-bold text-amber-600 dark:text-amber-400 mb-1.5 flex justify-between items-center opacity-80 uppercase tracking-widest">
+                        <span class="flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
+                            </svg>
+                            Note
+                        </span>
+                        <div class="flex gap-2">
+                            <button onclick="editNote(${idx})" title="Edit Note" class="text-slate-400 hover:text-amber-600 transition opacity-0 group-hover:opacity-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                </svg>
+                            </button>
+                            <button onclick="deleteNote(${idx})" title="Delete Note" class="text-slate-400 hover:text-rose-600 transition opacity-0 group-hover:opacity-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-sm text-slate-700 dark:text-slate-300 font-medium whitespace-pre-wrap leading-relaxed">${prog.note}</div>
+                </div>`;
+            }
+
+            card.innerHTML = qHeader + inputHtml + submitBtn + noteHtml + feedback;
             container.appendChild(card);
         });
 
@@ -620,6 +662,45 @@ function toggleStar(qIdx) {
     initSectionProgress();
     const prog = library[activeTestId].progress[activeSection][qIdx];
     prog.starred = !prog.starred;
+    saveAndSync();
+    renderQuestions();
+}
+
+function editNote(qIdx) {
+    initSectionProgress();
+    const prog = library[activeTestId].progress[activeSection][qIdx];
+    prog.isEditingNote = true;
+    renderQuestions();
+    setTimeout(() => {
+        const input = document.getElementById(`note-input-${qIdx}`);
+        if (input) { input.focus(); input.selectionStart = input.value.length; }
+    }, 50);
+}
+
+function saveNote(qIdx) {
+    const input = document.getElementById(`note-input-${qIdx}`);
+    if (!input) return;
+    initSectionProgress();
+    const prog = library[activeTestId].progress[activeSection][qIdx];
+    prog.note = input.value.trim();
+    prog.isEditingNote = false;
+    saveAndSync();
+    renderQuestions();
+}
+
+function cancelNote(qIdx) {
+    initSectionProgress();
+    const prog = library[activeTestId].progress[activeSection][qIdx];
+    prog.isEditingNote = false;
+    renderQuestions();
+}
+
+function deleteNote(qIdx) {
+    if (!confirm("Delete this note?")) return;
+    initSectionProgress();
+    const prog = library[activeTestId].progress[activeSection][qIdx];
+    prog.note = "";
+    prog.isEditingNote = false;
     saveAndSync();
     renderQuestions();
 }
@@ -657,7 +738,7 @@ function initSectionProgress() {
     sectionAnswers.forEach((_, i) => {
         if (!library[activeTestId].progress[activeSection][i]) {
             const type = library[activeTestId].key[activeSection].type;
-            library[activeTestId].progress[activeSection][i] = { userAns: type === 'multi' ? [] : "", submitted: false, marked: false, starred: false };
+            library[activeTestId].progress[activeSection][i] = { userAns: type === 'multi' ? [] : "", submitted: false, marked: false, starred: false, note: "" };
         }
     });
 }
