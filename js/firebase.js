@@ -48,13 +48,13 @@ async function initializeFirebase() {
                     userInfo.classList.add('flex');
                 }
                 if (signinBtn) signinBtn.classList.add('hidden');
-                
+
                 const userNameEl = document.getElementById('user-name');
                 const userAvatarEl = document.getElementById('user-avatar');
-                
+
                 if (userNameEl) userNameEl.textContent = user.displayName || user.email;
                 if (userAvatarEl) userAvatarEl.src = user.photoURL || 'https://via.placeholder.com/24';
-                
+
                 await loadUserLibraryFromFirestore();
                 if (typeof renderLibrary === 'function') renderLibrary();
             } else {
@@ -63,7 +63,7 @@ async function initializeFirebase() {
                     userInfo.classList.remove('flex');
                 }
                 if (signinBtn) signinBtn.classList.remove('hidden');
-                
+
                 // If we want to clear library on logout, uncomment:
                 // library = {};
                 // But usually we might keep local fallback or just clear it.
