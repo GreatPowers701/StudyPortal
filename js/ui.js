@@ -234,19 +234,20 @@ function showReport() {
     const content = document.getElementById('reportContent');
     content.innerHTML = '';
 
-    let total = 0, totalCorrect = 0, totalAttempted = 0, totalIncorrect = 0;
+    let total = 0, totalCorrect = 0, totalAttempted = 0, totalIncorrect = 0, totalPartial = 0;
     const sectionRows = [];
 
     Object.keys(test.key).forEach(s => {
         const sAns = test.key[s].answers;
         const sProg = test.progress ? (test.progress[s] || {}) : {};
-        let sCorrect = 0, sAttempted = 0, sIncorrect = 0;
+        let sCorrect = 0, sAttempted = 0, sIncorrect = 0, sPartial = 0;
 
         sAns.forEach((_, idx) => {
             const q = sProg[idx];
             if (q && q.submitted) {
                 sAttempted++;
                 if (q.correct) sCorrect++;
+                else if (q.partial) sPartial++;
                 else sIncorrect++;
             }
         });
@@ -255,7 +256,9 @@ function showReport() {
         totalCorrect += sCorrect;
         totalAttempted += sAttempted;
         totalIncorrect += sIncorrect;
+        totalPartial += sPartial;
 
+        const colClass = sPartial > 0 ? 'grid-cols-4' : 'grid-cols-3';
         const row = document.createElement('div');
         row.className = 'bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800';
         row.innerHTML = `
@@ -263,7 +266,7 @@ function showReport() {
                 <span class="font-bold text-slate-700 dark:text-slate-300">${s}</span>
                 <span class="text-xs font-black px-2 py-1 bg-slate-200 dark:bg-slate-800 rounded uppercase tracking-tighter dark:text-slate-400">Section</span>
             </div>
-            <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="grid ${colClass} gap-2 text-center text-xs">
                 <div class="bg-blue-50 dark:bg-blue-900/20 p-2 rounded">
                     <div class="text-slate-400 dark:text-slate-500 font-medium mb-1">Attempted</div>
                     <div class="text-blue-600 dark:text-blue-400 font-bold">${sAttempted} / ${sAns.length}</div>
@@ -272,6 +275,11 @@ function showReport() {
                     <div class="text-slate-400 dark:text-slate-500 font-medium mb-1">Correct</div>
                     <div class="text-emerald-600 dark:text-emerald-400 font-bold">${sCorrect}</div>
                 </div>
+                ${sPartial > 0 ? `
+                <div class="bg-amber-50 dark:bg-amber-900/20 p-2 rounded">
+                    <div class="text-slate-400 dark:text-slate-500 font-medium mb-1">Partial</div>
+                    <div class="text-amber-600 dark:text-amber-400 font-bold">${sPartial}</div>
+                </div>` : ''}
                 <div class="bg-rose-50 dark:bg-rose-900/20 p-2 rounded">
                     <div class="text-slate-400 dark:text-slate-500 font-medium mb-1">Incorrect</div>
                     <div class="text-rose-600 dark:text-rose-400 font-bold">${sIncorrect}</div>
@@ -282,6 +290,7 @@ function showReport() {
     });
 
     const pct = total > 0 ? Math.round((totalCorrect / total) * 100) : 0;
+    const gridCols = totalPartial > 0 ? 'md:grid-cols-5' : 'md:grid-cols-4';
     const summary = document.createElement('div');
     summary.className = 'bg-slate-900 dark:bg-black text-white rounded-2xl p-6 mb-6';
     summary.innerHTML = `
@@ -291,7 +300,7 @@ function showReport() {
                 <p class="text-slate-400 text-sm font-medium uppercase tracking-widest">Final Score</p>
             </div>
             <div class="h-px w-full md:h-12 md:w-px bg-slate-700 dark:bg-slate-800"></div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 flex-1 w-full text-center">
+            <div class="grid grid-cols-2 ${gridCols} gap-8 flex-1 w-full text-center">
                 <div>
                     <div class="text-2xl font-bold">${totalAttempted}</div>
                     <div class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Attempted</div>
@@ -300,6 +309,11 @@ function showReport() {
                     <div class="text-2xl font-bold text-emerald-400">${totalCorrect}</div>
                     <div class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Correct</div>
                 </div>
+                ${totalPartial > 0 ? `
+                <div>
+                    <div class="text-2xl font-bold text-amber-500">${totalPartial}</div>
+                    <div class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Partial</div>
+                </div>` : ''}
                 <div>
                     <div class="text-2xl font-bold text-rose-400">${totalIncorrect}</div>
                     <div class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Incorrect</div>
