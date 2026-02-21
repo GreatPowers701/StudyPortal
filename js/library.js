@@ -81,12 +81,21 @@ function compareAnswers(user, key) {
     if (/^[A-Z]+$/.test(cleanKey) && /^[A-Z]+$/.test(cleanUser)) {
         const userChars = new Set(cleanUser.split(''));
         const keyChars = new Set(cleanKey.split(''));
-        let intersection = 0;
+
+        let allSelectedAreCorrect = true;
         for (let char of userChars) {
-            if (keyChars.has(char)) intersection++;
+            if (!keyChars.has(char)) {
+                allSelectedAreCorrect = false;
+                break;
+            }
         }
-        if (intersection > 0) {
-            return { correct: false, partial: true };
+
+        if (allSelectedAreCorrect && userChars.size > 0) {
+            if (userChars.size === keyChars.size) {
+                return { correct: true, partial: false };
+            } else {
+                return { correct: false, partial: true };
+            }
         }
     }
     return { correct: false, partial: false };
