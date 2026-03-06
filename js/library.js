@@ -64,6 +64,55 @@ function setupFileUpload() {
     };
 }
 
+function togglePasteJSON() {
+    const container = document.getElementById('pasteJSONContainer');
+    if (container) {
+        container.classList.toggle('hidden');
+        container.classList.toggle('flex');
+    }
+}
+
+function importPastedJSON() {
+    const titleIn = document.getElementById('newTestTitle');
+    const subjectIn = document.getElementById('newTestSubject');
+    const textarea = document.getElementById('pasteJSONTextarea');
+
+    if (!textarea || !textarea.value.trim()) return;
+
+    try {
+        const keyData = JSON.parse(textarea.value);
+        if (!validateJSONSchema(keyData)) {
+            throw new Error("Invalid schema structure.");
+        }
+        const id = 'test_' + Date.now();
+        const title = titleIn.value.trim() || 'Pasted Test ' + new Date().toLocaleTimeString();
+        const subject = subjectIn ? subjectIn.value.trim() : '';
+
+        library[id] = {
+            id: id,
+            title: title,
+            subject: subject || '',
+            key: keyData,
+            progress: {},
+            timeSpent: 0,
+            timerMode: 'countup',
+            timerLimit: 0,
+            sessionGoal: 0,
+            timerRunning: false,
+            lastUpdate: Date.now()
+        };
+
+        saveAndSync();
+        titleIn.value = '';
+        if (subjectIn) subjectIn.value = '';
+        textarea.value = '';
+        togglePasteJSON();
+        renderLibrary();
+    } catch (err) {
+        alert("Error: " + (err.message || "Invalid JSON format."));
+    }
+}
+
 // --- Answer Comparison ---
 function compareAnswers(user, key) {
     const cleanUser = Array.isArray(user) ? user.slice().sort().join('').toUpperCase() : String(user).trim().toUpperCase();
