@@ -242,8 +242,8 @@
                                 <input type="text" id="newTestSubject" placeholder="Subject"
                                     class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm">
                                 <input type="file" id="newTestFile" accept=".json" class="hidden">
-                                <button onclick="document.getElementById('newTestFile').click()"
-                                    class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 whitespace-nowrap">
+                                <button onclick="document.getElementById('newTestFile').click()" title="Upload File"
+                                    class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-1 whitespace-nowrap">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -251,6 +251,23 @@
                                     </svg>
                                     Upload
                                 </button>
+                                <button onclick="togglePasteJSON()" title="Paste JSON"
+                                    class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-1 whitespace-nowrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                    </svg>
+                                    Paste
+                                </button>
+                            </div>
+                            <div id="pasteJSONContainer" class="hidden flex-col gap-2 mt-3 w-full animate-fade-in">
+                                <textarea id="pasteJSONTextarea" placeholder="Paste your generated JSON here..."
+                                    rows="4"
+                                    class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm resize-y"></textarea>
+                                <button onclick="importPastedJSON()"
+                                    class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-4 py-2 rounded-xl font-bold hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 w-full">Save
+                                    Pasted Test</button>
                             </div>
                         </div>
 
