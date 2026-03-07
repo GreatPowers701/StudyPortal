@@ -115,6 +115,9 @@
         .starred-glow {
             @apply border-amber-400 dark:border-amber-400 shadow-[0_0_30px_rgba(245,158,11,0.4)] !important;
         }
+        .hidden-row {
+            display: none !important;
+        }
     </style>
 </head>
 
@@ -213,8 +216,21 @@
 
         <!-- View: Home Screen -->
         <main id="view-home" class="space-y-8 animate-fade-in">
-            <!-- Top Row: Add Test + To-Do + Quick Links (3 columns) -->
-            <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+            <!-- Top Row: Add Test, Daily Checklist, Quick Links (3 columns) -->
+            <div class="flex justify-between items-center w-full px-2 mb-[-1rem]">
+                <h3 class="text-xl font-bold text-slate-800 dark:text-slate-200">Daily Operations</h3>
+                <button onclick="toggleRow('row-1')"
+                    class="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 dark:bg-slate-800/50 bg-white/50 border border-slate-200/50 dark:border-slate-700/50 transition p-2 rounded-xl shadow-sm hover:shadow-md z-10"
+                    title="Toggle Section">
+                    <svg id="icon-row-1" xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5 transition-transform duration-300" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+            </div>
+            <section id="row-1-content"
+                class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start transition-all duration-500 origin-top overflow-hidden">
                 <!-- Upload Section -->
                 <div
                     class="glass p-8 rounded-3xl card-shadow text-center relative overflow-hidden group h-full flex flex-col justify-center">
@@ -286,63 +302,136 @@
                     </div>
                 </div>
 
-                <!-- To-Do List Section -->
+                <!-- Daily Checklist -->
                 <div
-                    class="glass p-8 rounded-3xl card-shadow relative overflow-hidden h-full flex flex-col min-h-[400px]">
-                    <div class="flex items-center justify-between gap-3 mb-4">
+                    class="glass p-8 rounded-3xl card-shadow h-full flex flex-col space-y-5 relative group min-h-[400px]">
+                    <div class="flex items-center justify-between flex-wrap gap-3 mb-2">
                         <div class="flex items-center gap-3">
                             <div
-                                class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center">
+                                class="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                        d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
-                            <h2 class="text-xl font-bold dark:text-white">To‑Do List</h2>
+                            <h2 class="text-xl font-bold dark:text-white">Daily Checklist</h2>
                         </div>
-                        <button id="tasks-connect-btn" onclick="handleTasksAuthClick()"
+                        <button id="sheets-connect-btn" onclick="handleSheetsAuthClick()"
                             class="text-xs bg-white/50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg font-semibold hover:bg-white dark:hover:bg-slate-800 transition whitespace-nowrap backdrop-blur-sm">
-                            Connect Google
+                            Connect Google Sheets
                         </button>
+                        <a id="sheets-view-btn"
+                            href="https://docs.google.com/spreadsheets/d/14XkmLcut2i7fHdcBfw9wH8VXPhsm8U48EsppsUqgdBk/edit"
+                            target="_blank"
+                            class="hidden text-xs bg-blue-50 dark:bg-blue-900/20 border border-blue-200/60 dark:border-blue-700/60 text-blue-600 dark:text-blue-400 px-3 py-1.5 rounded-lg font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/40 transition whitespace-nowrap backdrop-blur-sm shadow-sm flex items-center gap-1 ml-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                            View Sheet
+                        </a>
                     </div>
 
-                    <div id="tasks-status"
-                        class="text-[10px] mb-4 font-medium px-3 py-1.5 rounded-lg bg-amber-50/50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30 inline-block self-start">
+                    <div id="sheets-status"
+                        class="text-[10px] mb-2 font-medium px-3 py-1.5 rounded-lg bg-amber-50/50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30 inline-block self-start">
                         Not connected
                     </div>
 
-                    <!-- Add To-Do -->
-                    <div class="flex flex-col gap-2 mb-4">
-                        <input id="todo-input" type="text" placeholder="New task..."
-                            class="glass-input w-full px-4 py-2.5 rounded-xl text-sm text-slate-900 dark:text-white outline-none placeholder:text-slate-400">
-                        <div class="flex gap-2">
-                            <input id="todo-due-date" type="date"
-                                class="glass-input flex-1 px-4 py-2.5 rounded-xl text-sm text-slate-900 dark:text-white outline-none">
-                            <button onclick="addTodo()"
-                                class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-800 dark:hover:bg-slate-200 transition shadow-lg whitespace-nowrap">
-                                Add
-                            </button>
+                    <!-- Test Given? -->
+                    <div
+                        class="bg-white/50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-200">Test given?</label>
+                            <div class="flex gap-2">
+                                <button id="btn-test-yes" onclick="setDetailedTest(true)"
+                                    class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-colors bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 flex-1">Yes</button>
+                                <button id="btn-test-no" onclick="setDetailedTest(false)"
+                                    class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-colors bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 flex-1">No</button>
+                            </div>
+                        </div>
+
+                        <!-- Test Details (Hidden by default) -->
+                        <div id="test-details-container"
+                            class="hidden flex-col gap-3 pt-3 border-t border-slate-200/50 dark:border-slate-700/50 animate-fade-in">
+                            <input type="text" id="checklist-test-name" placeholder="Test Name"
+                                class="glass-input w-full px-3 py-2 rounded-lg text-slate-900 dark:text-white outline-none placeholder:text-slate-400 text-xs">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] uppercase font-bold text-slate-400">Paper 1 Marks</label>
+                                    <div class="flex items-center gap-1">
+                                        <input type="number" id="checklist-p1-marks"
+                                            class="glass-input w-full px-3 py-2 rounded-lg text-slate-900 dark:text-white outline-none text-xs"
+                                            placeholder="Score">
+                                        <span class="text-slate-400 text-xs">/</span>
+                                        <input type="number" id="checklist-p1-total"
+                                            class="glass-input w-full px-3 py-2 rounded-lg text-slate-900 dark:text-white outline-none text-xs"
+                                            placeholder="Total">
+                                    </div>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] uppercase font-bold text-slate-400">Paper 2 Marks</label>
+                                    <div class="flex items-center gap-1">
+                                        <input type="number" id="checklist-p2-marks"
+                                            class="glass-input w-full px-3 py-2 rounded-lg text-slate-900 dark:text-white outline-none text-xs"
+                                            placeholder="Score">
+                                        <span class="text-slate-400 text-xs">/</span>
+                                        <input type="number" id="checklist-p2-total"
+                                            class="glass-input w-full px-3 py-2 rounded-lg text-slate-900 dark:text-white outline-none text-xs"
+                                            placeholder="Total">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Task List -->
-                    <div id="todo-list"
-                        class="flex-1 max-h-64 overflow-y-auto custom-scrollbar space-y-2.5 text-sm text-slate-700 dark:text-slate-200 pr-1">
-                        <!-- Tasks rendered here -->
+                    <!-- Questions Solved -->
+                    <div class="bg-white/50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 space-y-2 transition-colors duration-300"
+                        id="qs-solved-container">
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-200">Questions Solved</label>
+                            <div class="flex items-center gap-2">
+                                <input type="number" id="checklist-qs-solved" oninput="checkQsGoal()"
+                                    class="glass-input w-16 px-2 py-1.5 rounded-lg text-slate-900 dark:text-white outline-none text-center text-sm font-bold transition-colors">
+                                <span class="text-xs text-slate-400 font-medium">/ <span
+                                        id="checklist-qs-goal">200</span></span>
+                            </div>
+                        </div>
                     </div>
 
+                    <!-- Badminton -->
                     <div
-                        class="mt-auto pt-3 border-t border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wider">
-                        <span id="todo-count">0 tasks</span>
-                        <button onclick="clearCompletedTodos()" class="hover:text-rose-500 transition">Clear
-                            completed</button>
+                        class="bg-white/50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
+                        <label class="text-sm font-bold text-slate-700 dark:text-slate-200">Played Badminton?</label>
+                        <div class="flex gap-2">
+                            <button id="btn-badminton-yes" onclick="toggleBooleanState('badminton', true)"
+                                class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-colors bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200">Yes</button>
+                            <button id="btn-badminton-no" onclick="toggleBooleanState('badminton', false)"
+                                class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-colors bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200">No</button>
+                        </div>
                     </div>
+
+                    <!-- Mental Solving -->
+                    <div
+                        class="bg-white/50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
+                        <label class="text-sm font-bold text-slate-700 dark:text-slate-200">Mental Solving?</label>
+                        <div class="flex gap-2">
+                            <button id="btn-mental-yes" onclick="toggleBooleanState('mental', true)"
+                                class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-colors bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200">Yes</button>
+                            <button id="btn-mental-no" onclick="toggleBooleanState('mental', false)"
+                                class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-colors bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200">No</button>
+                        </div>
+                    </div>
+
+                    <button onclick="saveDailyChecklist()" id="save-checklist-btn"
+                        class="mt-auto bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold py-3.5 rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">Save
+                        Today's Progress</button>
                 </div>
 
                 <!-- Quick Links Card -->
                 <div
-                    class="glass p-8 rounded-3xl card-shadow relative overflow-hidden h-full flex flex-col group min-h-[400px]">
+                    class="glass p-8 rounded-3xl card-shadow relative overflow-hidden flex flex-col group min-h-[400px]">
                     <div
                         class="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition duration-500">
                     </div>
@@ -380,6 +469,53 @@
                             class="flex-1 space-y-2 overflow-y-auto custom-scrollbar pr-1 max-h-[300px]">
                             <!-- Links rendered here -->
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Second Row: Weekly Planner -->
+            <div class="flex justify-between items-center w-full mt-6 px-2 mb-[-1rem]">
+                <h3 class="text-xl font-bold text-slate-800 dark:text-slate-200">Weekly Schedule</h3>
+                <button onclick="toggleRow('row-2')"
+                    class="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 dark:bg-slate-800/50 bg-white/50 border border-slate-200/50 dark:border-slate-700/50 transition p-2 rounded-xl shadow-sm hover:shadow-md z-10"
+                    title="Toggle Section">
+                    <svg id="icon-row-2" xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5 transition-transform duration-300" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+            </div>
+            <section id="row-2-content" class="mt-4 transition-all duration-500 origin-top overflow-hidden">
+                <!-- Weekly Planner -->
+                <div class="glass p-8 rounded-3xl card-shadow flex flex-col relative min-h-[400px]">
+                    <div class="flex items-center justify-between gap-3 mb-2">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <h2 class="text-xl font-bold dark:text-white">Weekly Planner</h2>
+                        </div>
+                        <button id="tasks-connect-btn" onclick="handlePlannerAuthClick()"
+                            class="text-xs bg-white/50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg font-semibold hover:bg-white dark:hover:bg-slate-800 transition whitespace-nowrap backdrop-blur-sm">
+                            Connect Google Tasks
+                        </button>
+                    </div>
+
+                    <div id="planner-status"
+                        class="text-[10px] mb-4 font-medium px-3 py-1.5 rounded-lg bg-amber-50/50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30 inline-block self-start">
+                        Not connected
+                    </div>
+
+                    <!-- 7-Day Horizontal Scroll Container -->
+                    <div id="weekly-planner-container"
+                        class="flex gap-4 overflow-x-auto custom-scrollbar pb-4 flex-1 items-stretch">
+                        <!-- Days injected here via JS -->
                     </div>
                 </div>
             </section>
@@ -886,7 +1022,10 @@
     <script src="js/ui.js"></script>
     <script src="js/timer.js"></script>
     <script src="js/library.js"></script>
-    <script src="js/todos.js"></script>
+    <script src="js/planner.js"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://accounts.google.com/gsi/client"></script>
+    <script src="js/checklist.js"></script>
     <script src="js/quicklinks.js"></script>
 
     <!-- App Initialization -->
@@ -895,13 +1034,85 @@
             applyTheme();
             setupFileUpload();
             initializeFirebase();
-            loadLocalTodos();
-            renderTodos();
-            initializeGoogleTasksClient();
+            loadLocalPlannerTasks();
+            renderWeeklyPlanner();
+            initializeGooglePlannerClient();
+            loadDailyChecklist();
+            initializeGoogleSheetsClient();
             loadQuickLinks();
             renderQuickLinks();
         };
     </script>
+
+    <script>
+        // Row toggling logic
+        function toggleRow(rowId) {
+            const content = document.getElementById(rowId + '-content');
+            const icon = document.getElementById('icon-' + rowId);
+
+            const isCollapsing = !content.classList.contains('hidden-row');
+
+            if (isCollapsing) {
+                // Collapse
+                content.style.height = content.scrollHeight + 'px';
+                // Trigger reflow
+                content.offsetHeight;
+                content.style.height = '0px';
+                content.style.opacity = '0';
+                content.style.marginTop = '0px';
+                content.style.paddingTop = '0px';
+                content.style.paddingBottom = '0px';
+
+                setTimeout(() => {
+                    content.classList.add('hidden-row');
+                }, 500);
+
+                icon.classList.add('rotate-180');
+                localStorage.setItem(`portal_${rowId}_state`, 'collapsed');
+            } else {
+                // Expand
+                content.classList.remove('hidden-row');
+                content.style.height = content.scrollHeight + 'px';
+                content.style.opacity = '1';
+                content.style.marginTop = '';
+                content.style.paddingTop = '';
+                content.style.paddingBottom = '';
+
+                setTimeout(() => {
+                    content.style.height = 'auto';
+                }, 500);
+
+                icon.classList.remove('rotate-180');
+                localStorage.setItem(`portal_${rowId}_state`, 'expanded');
+            }
+        }
+
+        function initRows() {
+            ['row-1', 'row-2'].forEach(rowId => {
+                const state = localStorage.getItem(`portal_${rowId}_state`);
+                const content = document.getElementById(rowId + '-content');
+                const icon = document.getElementById('icon-' + rowId);
+
+                if (state === 'collapsed') {
+                    content.classList.add('hidden-row');
+                    content.style.height = '0px';
+                    content.style.opacity = '0';
+                    content.style.marginTop = '0px';
+                    content.style.paddingTop = '0px';
+                    content.style.paddingBottom = '0px';
+                    icon.classList.add('rotate-180');
+                } else {
+                    // Pre-expanded (default)
+                    content.style.height = 'auto';
+                    content.style.opacity = '1';
+                    icon.classList.remove('rotate-180');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', initRows);
+    </script>
+
 </body>
 
 </html>
