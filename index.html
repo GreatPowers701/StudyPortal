@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Study Portal - Multi-Test Manager</title>
     <link rel="icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/19029/19029128.png">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="apple-touch-icon" href="./icons/icon-192.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Firebase SDK -->
     <!-- Use compat builds (global `firebase`) so existing code works without module imports -->
@@ -1322,6 +1325,15 @@
         document.addEventListener('DOMContentLoaded', initRows);
     </script>
 
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => console.log('ServiceWorker registered'))
+                    .catch(err => console.log('ServiceWorker registration failed: ', err));
+            });
+        }
+    </script>
 </body>
 
 </html>
