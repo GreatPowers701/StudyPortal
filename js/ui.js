@@ -27,15 +27,201 @@ function toggleTheme() {
 }
 
 // --- Navigation ---
+let sidebarOpen = false;
+
+function toggleSidebar() {
+    sidebarOpen = !sidebarOpen;
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    if (sidebarOpen) {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+        // small timeout for transition
+        setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+    } else {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('opacity-0');
+        setTimeout(() => overlay.classList.add('hidden'), 300);
+    }
+}
+
+let desktopSidebarCollapsed = false;
+
+function toggleDesktopSidebar() {
+    desktopSidebarCollapsed = !desktopSidebarCollapsed;
+    const sidebar = document.getElementById('sidebar');
+    const texts = document.querySelectorAll('.sidebar-text');
+    const logoArea = document.getElementById('sidebar-logo-text');
+    const icon = document.getElementById('collapse-icon');
+
+    if (desktopSidebarCollapsed) {
+        sidebar.classList.remove('w-64');
+        sidebar.classList.add('w-20');
+        texts.forEach(t => t.classList.add('opacity-0', 'pointer-events-none'));
+        if (logoArea) logoArea.classList.add('opacity-0', 'pointer-events-none');
+        if (icon) icon.classList.add('rotate-180');
+    } else {
+        sidebar.classList.remove('w-20');
+        sidebar.classList.add('w-64');
+        texts.forEach(t => t.classList.remove('opacity-0', 'pointer-events-none'));
+        if (logoArea) logoArea.classList.remove('opacity-0', 'pointer-events-none');
+        if (icon) icon.classList.remove('rotate-180');
+    }
+}
+
+function switchView(viewName) {
+    // Hide all views
+    document.getElementById('view-home').classList.add('hidden');
+    document.getElementById('view-tests').classList.add('hidden');
+    document.getElementById('view-analysis').classList.add('hidden');
+    document.getElementById('view-test').classList.add('hidden');
+
+    // Show selected view
+    document.getElementById(`view-${viewName}`).classList.remove('hidden');
+
+    // Update nav active states
+    const navItems = ['home', 'tests', 'analysis'];
+    navItems.forEach(item => {
+        const btn = document.getElementById(`nav-${item}`);
+        if (!btn) return;
+        if (item === viewName) {
+            btn.className = 'w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all duration-300 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400';
+        } else {
+            btn.className = 'w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all duration-300 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-700 dark:hover:text-slate-300';
+        }
+    });
+
+    if (viewName === 'home') {
+        // Home setup
+    } else if (viewName === 'tests') {
+        if (typeof renderLibrary === 'function') renderLibrary();
+    } else if (viewName === 'analysis') {
+        updateAnalysisView();
+    }
+
+    // Close sidebar on mobile after navigating
+    if (window.innerWidth < 1024 && !!sidebarOpen === true) {
+        toggleSidebar();
+    }
+}
+
+function updateAnalysisView() {
+    let totalTests = 0;
+    let totalTime = 0;
+    let totalQ = 0;
+    let globalAttempted = 0;
+    let globalCorrect = 0;
+
+    const subjectStats = {};
+
+    if (typeof library === 'undefined') return;
+
+    Object.values(library).forEach(test => {
+        totalTests++;
+        totalTime += test.timeSpent || 0;
+
+        let testQuestions = 0;
+        let testCorrect = 0;
+        let testAttempted = 0;
+
+        if (test.key) {
+            Object.keys(test.key).forEach(s => {
+                const sAns = test.key[s].answers;
+                const sProg = test.progress ? (test.progress[s] || {}) : {};
+
+                testQuestions += sAns.length;
+                sAns.forEach((_, idx) => {
+                    const q = sProg[idx];
+                    if (q && q.submitted) {
+                        testAttempted++;
+                        if (q.correct) testCorrect++;
+                    }
+                });
+            });
+        }
+
+        totalQ += testQuestions;
+        globalAttempted += testAttempted;
+        globalCorrect += testCorrect;
+
+        const subj = (test.subject && test.subject.trim()) ? test.subject.trim() : 'Uncategorised';
+        if (!subjectStats[subj]) {
+            subjectStats[subj] = { total: 0, correct: 0, attempted: 0 };
+        }
+        subjectStats[subj].total += testQuestions;
+        subjectStats[subj].attempted += testAttempted;
+        subjectStats[subj].correct += testCorrect;
+    });
+
+    const accuracy = globalAttempted > 0 ? Math.round((globalCorrect / globalAttempted) * 100) : 0;
+
+    const elTotalTests = document.getElementById('analysis-total-tests');
+    const elAccuracy = document.getElementById('analysis-accuracy');
+    const elQsSolved = document.getElementById('analysis-qs-solved');
+    const elTimeSpent = document.getElementById('analysis-time-spent');
+
+    if (elTotalTests) elTotalTests.innerText = totalTests;
+    if (elAccuracy) elAccuracy.innerText = `${accuracy}%`;
+    if (elQsSolved) elQsSolved.innerText = globalAttempted;
+
+    if (elTimeSpent) {
+        const h = Math.floor(totalTime / 3600);
+        const m = Math.floor((totalTime % 3600) / 60);
+        elTimeSpent.innerText = `${h}h ${m}m`;
+    }
+
+    const breakdownContainer = document.getElementById('analysis-subject-breakdown');
+    if (!breakdownContainer) return;
+    breakdownContainer.innerHTML = '';
+
+    const subjects = Object.keys(subjectStats).sort((a, b) => {
+        if (a === 'Uncategorised') return 1;
+        if (b === 'Uncategorised') return -1;
+        return a.localeCompare(b);
+    });
+
+    if (subjects.length === 0) {
+        breakdownContainer.innerHTML = '<p class="text-slate-500 dark:text-slate-400 text-sm">No data available yet.</p>';
+        return;
+    }
+
+    subjects.forEach(subj => {
+        const stats = subjectStats[subj];
+        const pct = stats.attempted > 0 ? Math.round((stats.correct / stats.attempted) * 100) : 0;
+        const width = stats.total > 0 ? Math.round((stats.attempted / stats.total) * 100) : 0;
+
+        const row = document.createElement('div');
+        row.className = 'space-y-2';
+        row.innerHTML = `
+            <div class="flex justify-between text-sm font-bold">
+                <span class="text-slate-700 dark:text-slate-300">\${subj}</span>
+                <span class="text-slate-500 dark:text-slate-400">\${stats.correct} / \${stats.attempted} Correct (\${pct}%)</span>
+            </div>
+            <div class="w-full h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r \${subj === 'Uncategorised' ? 'from-slate-400 to-slate-500' : 'from-indigo-500 to-purple-500'} rounded-full transition-all duration-700" style="width: \${width}%"></div>
+            </div>
+        `;
+        breakdownContainer.appendChild(row);
+    });
+}
+
 function goHome() {
     if (typeof stopTimer === 'function') stopTimer();
     if (typeof saveAndSync === 'function') saveAndSync();
 
-    document.getElementById('view-home').classList.remove('hidden');
-    document.getElementById('view-test').classList.add('hidden');
     activeTestId = null;
     clearFilters();
-    if (typeof renderLibrary === 'function') renderLibrary();
+    switchView('home');
+}
+
+function goTests() {
+    if (typeof stopTimer === 'function') stopTimer();
+    if (typeof saveAndSync === 'function') saveAndSync();
+
+    activeTestId = null;
+    clearFilters();
+    switchView('tests');
 }
 
 function handleSearch(val) {
