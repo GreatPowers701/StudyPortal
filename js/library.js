@@ -332,8 +332,9 @@ function openTest(id) {
     try {
         activeTestId = id;
         const test = library[id];
-        document.getElementById('view-home').classList.add('hidden');
-        document.getElementById('view-test').classList.remove('hidden');
+
+        switchView('test');
+
         document.getElementById('active-test-title').innerText = test.title;
 
         // Handle PDF Button
