@@ -122,7 +122,7 @@
 </head>
 
 <body
-    class="bg-gradient-to-br from-indigo-50 via-purple-50/50 to-pink-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300 selection:bg-violet-500/30">
+    class="bg-gradient-to-br from-indigo-50 via-purple-50/50 to-pink-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300 selection:bg-violet-500/30 overflow-hidden">
 
     <!-- Autosave Indicator -->
     <div id="autosave-indicator"
@@ -130,662 +130,871 @@
         Saved ✓
     </div>
 
-    <div id="app" class="w-full px-6 py-8">
-        <!-- Navigation Header -->
-        <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
-            <div id="header-left" class="flex items-center gap-4">
-                <div
-                    class="p-2 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-xl shadow-lg shadow-indigo-500/20 text-white">
+    <!-- Mobile Sidebar Overlay -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()"
+        class="fixed inset-0 bg-slate-900/50 dark:bg-black/50 backdrop-blur-sm z-40 hidden lg:hidden transition-opacity opacity-0">
+    </div>
+
+    <div class="flex h-screen w-full">
+        <!-- Sidebar -->
+        <aside id="sidebar"
+            class="w-64 flex-shrink-0 bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border-r border-white/40 dark:border-white/10 shadow-lg flex flex-col transition-all duration-300 z-50 fixed lg:relative h-full -translate-x-full lg:translate-x-0">
+            <div class="p-6 flex items-center justify-between overflow-hidden">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="p-2 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-xl shadow-lg shadow-indigo-500/20 text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    </div>
+                    <div id="sidebar-logo-text" class="transition-opacity duration-300">
+                        <h1
+                            class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 tracking-tight whitespace-nowrap">
+                            Study Portal</h1>
+                    </div>
+                </div>
+                <button onclick="toggleSidebar()"
+                    class="lg:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <nav class="flex-1 px-4 py-6 space-y-2">
+                <button onclick="switchView('home')" id="nav-home"
+                    class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all duration-300 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 overflow-hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span class="sidebar-text whitespace-nowrap transition-opacity duration-300">Home</span>
+                </button>
+                <button onclick="switchView('tests')" id="nav-tests"
+                    class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all duration-300 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-700 dark:hover:text-slate-300 overflow-hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    <span class="sidebar-text whitespace-nowrap transition-opacity duration-300">Tests</span>
+                </button>
+                <button onclick="switchView('analysis')" id="nav-analysis"
+                    class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all duration-300 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-700 dark:hover:text-slate-300 overflow-hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <span class="sidebar-text whitespace-nowrap transition-opacity duration-300">Analysis</span>
+                </button>
+            </nav>
+            <div class="px-4 py-4 border-t border-slate-200/50 dark:border-slate-800/50 hidden lg:flex justify-end">
+                <button onclick="toggleDesktopSidebar()"
+                    class="p-2 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <svg id="collapse-icon" xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5 transition-transform duration-300" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                    </svg>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+            <div id="app" class="w-full h-full overflow-y-auto px-6 py-8 custom-scrollbar relative">
+                <button onclick="toggleSidebar()"
+                    class="lg:hidden absolute top-6 left-6 z-30 p-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 rounded-xl shadow-sm text-slate-600 dark:text-slate-300">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-                </div>
-                <div>
-                    <h1
-                        class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 tracking-tight">
-                        Study Portal</h1>
-                    <p class="text-[10px] uppercase tracking-widest text-slate-400 font-semibold">Multi-Test Manager</p>
-                </div>
-            </div>
-            <div id="header-right"
-                class="flex items-center gap-3 flex-wrap justify-center md:justify-end w-full md:w-auto">
-                <!-- Version Badge -->
-                <div
-                    class="text-[9px] text-slate-400 dark:text-slate-500 font-bold px-2 py-1 rounded-md bg-white/50 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm whitespace-nowrap uppercase tracking-widest">
-                    v3.5 Beta</div>
-                <!-- Auth Status -->
-                <div id="auth-container" class="flex items-center gap-3 flex-wrap justify-center md:justify-end">
-                    <div id="user-info"
-                        class="hidden items-center gap-3 pl-2 pr-2 py-1.5 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md rounded-full border border-white/20 dark:border-white/5 shadow-sm">
-                        <img id="user-avatar" class="w-7 h-7 rounded-full ring-2 ring-white dark:ring-slate-700"
-                            alt="User">
-                        <span id="user-name"
-                            class="text-xs font-semibold text-slate-700 dark:text-slate-200 hidden sm:inline"></span>
-                        <button onclick="signOut()"
-                            class="ml-1 w-7 h-7 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-rose-100 hover:text-rose-500 dark:hover:bg-rose-900/30 dark:hover:text-rose-400 transition"
-                            title="Sign Out">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path fill-rule="evenodd"
-                                    d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                    </div>
-                    <button id="google-signin-btn"
-                        class="text-xs sm:text-sm bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-2 rounded-full font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">Sign
-                        in</button>
-                </div>
-                <!-- Theme Toggle -->
-                <button onclick="toggleTheme()"
-                    class="p-2 rounded-full bg-white/60 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50 text-slate-500 dark:text-slate-400 hover:bg-white hover:shadow-md dark:hover:bg-slate-800 transition backdrop-blur-sm"
-                    title="Toggle Theme">
-                    <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block"
-                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 16.243l.707.707M7.757 7.757l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
-                    </svg>
-                    <svg id="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 block dark:hidden"
-                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                            d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </button>
-                <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1 hidden sm:block"></div>
-                <button onclick="exportLibrary()"
-                    class="p-2 rounded-full bg-white/60 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50 text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 hover:bg-white hover:shadow-md dark:hover:bg-slate-800 transition backdrop-blur-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
-                </button>
-                <label
-                    class="p-2 rounded-full bg-white/60 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 hover:bg-white hover:shadow-md dark:hover:bg-slate-800 transition backdrop-blur-sm cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m-4-4v12" />
-                    </svg>
-                    <input type="file" id="importLibraryInput" class="hidden" onchange="importLibrary(event)">
-                </label>
-            </div>
-        </header>
 
-        <!-- View: Home Screen -->
-        <main id="view-home" class="space-y-8 animate-fade-in">
-            <!-- Top Row: Add Test, Daily Checklist, Quick Links (3 columns) -->
-            <div class="flex justify-between items-center w-full px-2 mb-[-1rem]">
-                <h3 class="text-xl font-bold text-slate-800 dark:text-slate-200">Daily Operations</h3>
-                <button onclick="toggleRow('row-1')"
-                    class="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 dark:bg-slate-800/50 bg-white/50 border border-slate-200/50 dark:border-slate-700/50 transition p-2 rounded-xl shadow-sm hover:shadow-md z-10"
-                    title="Toggle Section">
-                    <svg id="icon-row-1" xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5 transition-transform duration-300" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-            </div>
-            <section id="row-1-content"
-                class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start transition-all duration-500 origin-top overflow-hidden">
-                <!-- Upload Section -->
-                <div
-                    class="glass p-8 rounded-3xl card-shadow text-center relative overflow-hidden group h-full flex flex-col justify-center">
-                    <div
-                        class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition duration-500">
-                    </div>
-
-                    <div class="relative z-10">
+                <!-- Navigation Header -->
+                <header class="flex flex-col md:flex-row justify-end items-center mb-10 gap-4 mt-12 lg:mt-0">
+                    <div id="header-right"
+                        class="flex items-center gap-3 flex-wrap justify-center md:justify-end w-full md:w-auto">
+                        <!-- Version Badge -->
                         <div
-                            class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm group-hover:scale-110 transition duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                        </div>
-                        <h2 class="text-xl font-bold mb-2 dark:text-white">Add New Test</h2>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm mb-6 max-w-sm mx-auto">Upload a JSON answer
-                            key to create a new practice session.</p>
-
-                        <div class="flex flex-col gap-3 mb-6 w-full">
-                            <input type="text" id="newTestTitle" placeholder="Test Title"
-                                class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm">
-                            <div class="flex gap-2">
-                                <input type="text" id="newTestSubject" placeholder="Subject"
-                                    class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm">
-                                <input type="file" id="newTestFile" accept=".json" class="hidden">
-                                <button onclick="document.getElementById('newTestFile').click()" title="Upload File"
-                                    class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-1 whitespace-nowrap">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                    </svg>
-                                    Upload
-                                </button>
-                                <button onclick="togglePasteJSON()" title="Paste JSON"
-                                    class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-1 whitespace-nowrap">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                    </svg>
-                                    Paste
-                                </button>
-                            </div>
-                            <div id="pasteJSONContainer" class="hidden flex-col gap-2 mt-3 w-full animate-fade-in">
-                                <textarea id="pasteJSONTextarea" placeholder="Paste your generated JSON here..."
-                                    rows="4"
-                                    class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm resize-y"></textarea>
-                                <button onclick="importPastedJSON()"
-                                    class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-4 py-2 rounded-xl font-bold hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 w-full">Save
-                                    Pasted Test</button>
-                            </div>
-                        </div>
-
-                        <div class="pt-5 border-t border-slate-200/50 dark:border-slate-700/50">
-                            <button onclick="copyExtractionPrompt()"
-                                class="text-xs text-slate-500 dark:text-slate-400 font-semibold hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-2 mx-auto group/btn justify-center">
-                                <span class="group-hover/btn:underline decoration-blue-400/50 underline-offset-4">Copy
-                                    Extraction Prompt</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Daily Checklist -->
-                <div
-                    class="glass p-8 rounded-3xl card-shadow h-full flex flex-col space-y-5 relative group min-h-[400px]">
-                    <div class="flex items-center justify-between flex-wrap gap-3 mb-2">
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center shadow-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7" />
-                                </svg>
-                            </div>
-                            <h2 class="text-xl font-bold dark:text-white">Daily Checklist</h2>
-                        </div>
-                        <button id="sheets-connect-btn" onclick="handleSheetsAuthClick()"
-                            class="text-xs bg-white/50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg font-semibold hover:bg-white dark:hover:bg-slate-800 transition whitespace-nowrap backdrop-blur-sm">
-                            Connect Google Sheets
-                        </button>
-                        <a id="sheets-view-btn"
-                            href="https://docs.google.com/spreadsheets/d/14XkmLcut2i7fHdcBfw9wH8VXPhsm8U48EsppsUqgdBk/edit"
-                            target="_blank"
-                            class="hidden text-xs bg-blue-50 dark:bg-blue-900/20 border border-blue-200/60 dark:border-blue-700/60 text-blue-600 dark:text-blue-400 px-3 py-1.5 rounded-lg font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/40 transition whitespace-nowrap backdrop-blur-sm shadow-sm flex items-center gap-1 ml-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                            View Sheet
-                        </a>
-                    </div>
-
-                    <div id="sheets-status"
-                        class="text-[10px] mb-2 font-medium px-3 py-1.5 rounded-lg bg-amber-50/50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30 inline-block self-start">
-                        Not connected
-                    </div>
-
-                    <!-- Test Given? -->
-                    <div
-                        class="bg-white/50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 space-y-3">
-                        <div class="flex items-center justify-between">
-                            <label class="text-sm font-bold text-slate-700 dark:text-slate-200">Test given?</label>
-                            <div class="flex gap-2">
-                                <button id="btn-test-yes" onclick="setDetailedTest(true)"
-                                    class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-colors bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 flex-1">Yes</button>
-                                <button id="btn-test-no" onclick="setDetailedTest(false)"
-                                    class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-colors bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 flex-1">No</button>
-                            </div>
-                        </div>
-
-                        <!-- Test Details (Hidden by default) -->
-                        <div id="test-details-container"
-                            class="hidden flex-col gap-3 pt-3 border-t border-slate-200/50 dark:border-slate-700/50 animate-fade-in">
-                            <input type="text" id="checklist-test-name" placeholder="Test Name"
-                                class="glass-input w-full px-3 py-2 rounded-lg text-slate-900 dark:text-white outline-none placeholder:text-slate-400 text-xs">
-                            <div class="grid grid-cols-2 gap-2">
-                                <div class="space-y-1">
-                                    <label class="text-[10px] uppercase font-bold text-slate-400">Paper 1 Marks</label>
-                                    <div class="flex items-center gap-1">
-                                        <input type="number" id="checklist-p1-marks"
-                                            class="glass-input w-full px-3 py-2 rounded-lg text-slate-900 dark:text-white outline-none text-xs"
-                                            placeholder="Score">
-                                        <span class="text-slate-400 text-xs">/</span>
-                                        <input type="number" id="checklist-p1-total"
-                                            class="glass-input w-full px-3 py-2 rounded-lg text-slate-900 dark:text-white outline-none text-xs"
-                                            placeholder="Total">
-                                    </div>
-                                </div>
-                                <div class="space-y-1">
-                                    <label class="text-[10px] uppercase font-bold text-slate-400">Paper 2 Marks</label>
-                                    <div class="flex items-center gap-1">
-                                        <input type="number" id="checklist-p2-marks"
-                                            class="glass-input w-full px-3 py-2 rounded-lg text-slate-900 dark:text-white outline-none text-xs"
-                                            placeholder="Score">
-                                        <span class="text-slate-400 text-xs">/</span>
-                                        <input type="number" id="checklist-p2-total"
-                                            class="glass-input w-full px-3 py-2 rounded-lg text-slate-900 dark:text-white outline-none text-xs"
-                                            placeholder="Total">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Questions Solved -->
-                    <div class="bg-white/50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 space-y-2 transition-colors duration-300"
-                        id="qs-solved-container">
-                        <div class="flex items-center justify-between">
-                            <label class="text-sm font-bold text-slate-700 dark:text-slate-200">Questions Solved</label>
-                            <div class="flex items-center gap-2">
-                                <input type="number" id="checklist-qs-solved" oninput="checkQsGoal()"
-                                    class="glass-input w-16 px-2 py-1.5 rounded-lg text-slate-900 dark:text-white outline-none text-center text-sm font-bold transition-colors">
-                                <span class="text-xs text-slate-400 font-medium">/ <span
-                                        id="checklist-qs-goal">200</span></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Badminton -->
-                    <div
-                        class="bg-white/50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
-                        <label class="text-sm font-bold text-slate-700 dark:text-slate-200">Played Badminton?</label>
-                        <div class="flex gap-2">
-                            <button id="btn-badminton-yes" onclick="toggleBooleanState('badminton', true)"
-                                class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-colors bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200">Yes</button>
-                            <button id="btn-badminton-no" onclick="toggleBooleanState('badminton', false)"
-                                class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-colors bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200">No</button>
-                        </div>
-                    </div>
-
-                    <!-- Mental Solving -->
-                    <div
-                        class="bg-white/50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
-                        <label class="text-sm font-bold text-slate-700 dark:text-slate-200">Mental Solving?</label>
-                        <div class="flex gap-2">
-                            <button id="btn-mental-yes" onclick="toggleBooleanState('mental', true)"
-                                class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-colors bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200">Yes</button>
-                            <button id="btn-mental-no" onclick="toggleBooleanState('mental', false)"
-                                class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-colors bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200">No</button>
-                        </div>
-                    </div>
-
-                    <button onclick="saveDailyChecklist()" id="save-checklist-btn"
-                        class="mt-auto bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold py-3.5 rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">Save
-                        Today's Progress</button>
-                </div>
-
-                <!-- Quick Links Card -->
-                <div
-                    class="glass p-8 rounded-3xl card-shadow relative overflow-hidden flex flex-col group min-h-[400px]">
-                    <div
-                        class="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition duration-500">
-                    </div>
-
-                    <div class="relative z-10 flex flex-col h-full">
-                        <div class="flex items-center justify-between gap-3 mb-6">
-                            <div class="flex items-center gap-3">
-                                <div
-                                    class="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center shadow-sm">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                                    </svg>
-                                </div>
-                                <h2 class="text-xl font-bold dark:text-white">Quick Links</h2>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span id="quick-links-count"
-                                    class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider bg-white/50 dark:bg-slate-800/50 px-2 py-1 rounded-md">0</span>
-                                <button onclick="openAddLinkModal()"
-                                    class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-500 transition shadow-sm"
-                                    title="Add Link">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 4v16m8-8H4" />
+                            class="text-[9px] text-slate-400 dark:text-slate-500 font-bold px-2 py-1 rounded-md bg-white/50 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm whitespace-nowrap uppercase tracking-widest hidden sm:block">
+                            v3.5 Beta</div>
+                        <!-- Auth Status -->
+                        <div id="auth-container"
+                            class="flex items-center gap-3 flex-wrap justify-center md:justify-end">
+                            <div id="user-info"
+                                class="hidden items-center gap-3 pl-2 pr-2 py-1.5 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md rounded-full border border-white/20 dark:border-white/5 shadow-sm">
+                                <img id="user-avatar" class="w-7 h-7 rounded-full ring-2 ring-white dark:ring-slate-700"
+                                    alt="User">
+                                <span id="user-name"
+                                    class="text-xs font-semibold text-slate-700 dark:text-slate-200 hidden sm:inline"></span>
+                                <button onclick="signOut()"
+                                    class="ml-1 w-7 h-7 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-rose-100 hover:text-rose-500 dark:hover:bg-rose-900/30 dark:hover:text-rose-400 transition"
+                                    title="Sign Out">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20"
+                                        fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
+                                            clip-rule="evenodd" />
                                     </svg>
                                 </button>
                             </div>
+                            <button id="google-signin-btn"
+                                class="text-xs sm:text-sm bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-2 rounded-full font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">Sign
+                                in</button>
                         </div>
-
-                        <!-- Links List -->
-                        <div id="quick-links-list"
-                            class="flex-1 space-y-2 overflow-y-auto custom-scrollbar pr-1 max-h-[300px]">
-                            <!-- Links rendered here -->
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Second Row: Weekly Planner -->
-            <div class="flex justify-between items-center w-full mt-6 px-2 mb-[-1rem]">
-                <h3 class="text-xl font-bold text-slate-800 dark:text-slate-200">Weekly Schedule</h3>
-                <button onclick="toggleRow('row-2')"
-                    class="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 dark:bg-slate-800/50 bg-white/50 border border-slate-200/50 dark:border-slate-700/50 transition p-2 rounded-xl shadow-sm hover:shadow-md z-10"
-                    title="Toggle Section">
-                    <svg id="icon-row-2" xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5 transition-transform duration-300" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-            </div>
-            <section id="row-2-content" class="mt-4 transition-all duration-500 origin-top overflow-hidden">
-                <!-- Weekly Planner -->
-                <div class="glass p-8 rounded-3xl card-shadow flex flex-col relative min-h-[400px]">
-                    <div class="flex items-center justify-between gap-3 mb-2">
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center shadow-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                            </div>
-                            <h2 class="text-xl font-bold dark:text-white">Weekly Planner</h2>
-                        </div>
-                        <button id="tasks-connect-btn" onclick="handlePlannerAuthClick()"
-                            class="text-xs bg-white/50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg font-semibold hover:bg-white dark:hover:bg-slate-800 transition whitespace-nowrap backdrop-blur-sm">
-                            Connect Google Tasks
-                        </button>
-                    </div>
-
-                    <div id="planner-status"
-                        class="text-[10px] mb-4 font-medium px-3 py-1.5 rounded-lg bg-amber-50/50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30 inline-block self-start">
-                        Not connected
-                    </div>
-
-                    <!-- 7-Day Horizontal Scroll Container -->
-                    <div id="weekly-planner-container"
-                        class="flex gap-4 overflow-x-auto custom-scrollbar pb-4 flex-1 items-stretch">
-                        <!-- Days injected here via JS -->
-                    </div>
-                </div>
-            </section>
-
-            <!-- Library Grid -->
-            <section>
-                <div class="flex items-center justify-between mb-8">
-                    <h2
-                        class="text-3xl font-black flex items-center gap-3 bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">
-                        My Tests
-                        <span id="test-count"
-                            class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 text-slate-500 dark:text-slate-400 text-sm px-3 py-1 rounded-full font-bold shadow-sm">0</span>
-                    </h2>
-
-                    <!-- Search/Filter Placeholder -->
-                    <div class="hidden sm:flex items-center gap-2">
-                        <div class="relative group">
-                            <input type="text" id="search-input" placeholder="Search tests..."
-                                oninput="handleSearch(this.value)"
-                                class="glass-input px-4 py-2 rounded-xl text-sm w-48 focus:w-64 transition-all duration-300 pl-10 text-slate-700 dark:text-slate-200 placeholder:text-slate-400">
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
+                        <!-- Theme Toggle -->
+                        <button onclick="toggleTheme()"
+                            class="p-2 rounded-full bg-white/60 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50 text-slate-500 dark:text-slate-400 hover:bg-white hover:shadow-md dark:hover:bg-slate-800 transition backdrop-blur-sm"
+                            title="Toggle Theme">
+                            <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 16.243l.707.707M7.757 7.757l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
                             </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="test-library" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Cards injected here -->
-                </div>
-            </section>
-        </main>
-
-        <!-- View: Test Workspace -->
-        <main id="view-test" class="hidden space-y-6 animate-fade-in relative">
-            <div class="flex flex-wrap justify-between items-center gap-4 mb-2">
-                <button onclick="goHome()"
-                    class="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition group px-3 py-2 rounded-xl hover:bg-white/50 dark:hover:bg-slate-800/50">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5 group-hover:-translate-x-1 transition-transform" viewBox="0 0 20 20"
-                        fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    Back to Library
-                </button>
-                <div class="flex items-center gap-3">
-                    <!-- Goals and Timer Info -->
-                    <div id="timer-display-area" class="flex items-center gap-3">
-                        <div id="active-goal-stats"
-                            class="hidden items-center gap-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-lg">
-                            Goal: <span id="display-goal-num">0</span> Qs
-                        </div>
-                        <div
-                            class="flex items-center bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 rounded-xl overflow-hidden h-10 shadow-sm">
-                            <div id="timer-box"
-                                class="flex items-center gap-2 px-4 py-1.5 text-slate-700 dark:text-slate-200 font-mono text-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition border-r border-slate-200/50 dark:border-slate-700/50"
-                                onclick="openTimerSettings()" title="Timer Settings">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span id="test-timer" class="font-bold tracking-wider">00:00:00</span>
-                            </div>
-                            <button id="timer-toggle-btn" onclick="toggleTimer()"
-                                class="px-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition text-slate-600 dark:text-slate-400 h-full flex items-center justify-center"
-                                title="Start/Stop Timer">
-                                <svg id="timer-play-icon" xmlns="http://www.w3.org/2000/svg"
-                                    class="h-5 w-5 text-emerald-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <svg id="timer-stop-icon" xmlns="http://www.w3.org/2000/svg"
-                                    class="h-5 w-5 hidden text-amber-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2">
-                        <button onclick="openKeyViewer(activeTestId)"
-                            class="p-2 rounded-xl bg-white/60 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 text-slate-500 dark:text-slate-400 transition"
-                            title="View answer key">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
+                            <svg id="theme-icon-moon" xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                             </svg>
                         </button>
-                        <button onclick="exportSingleTest(activeTestId)"
-                            class="p-2 rounded-xl bg-white/60 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 text-slate-500 dark:text-slate-400 transition"
-                            title="Export">
+                        <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1 hidden sm:block"></div>
+                        <button onclick="exportLibrary()"
+                            class="p-2 rounded-full bg-white/60 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50 text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 hover:bg-white hover:shadow-md dark:hover:bg-slate-800 transition backdrop-blur-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
                         </button>
-                        <button onclick="showReport()"
-                            class="p-2 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-900/50 transition font-bold flex items-center gap-2">
+                        <label
+                            class="p-2 rounded-full bg-white/60 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 hover:bg-white hover:shadow-md dark:hover:bg-slate-800 transition backdrop-blur-sm cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m-4-4v12" />
+                            </svg>
+                            <input type="file" id="importLibraryInput" class="hidden" onchange="importLibrary(event)">
+                        </label>
+                    </div>
+                </header>
+
+                <!-- View: Home Screen -->
+                <main id="view-home" class="space-y-8 animate-fade-in">
+                    <!-- Top Row: Add Test, Daily Checklist, Quick Links (3 columns) -->
+                    <div class="flex justify-between items-center w-full px-2 mb-[-1rem]">
+                        <h3 class="text-xl font-bold text-slate-800 dark:text-slate-200">Daily Operations</h3>
+                        <button onclick="toggleRow('row-1')"
+                            class="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 dark:bg-slate-800/50 bg-white/50 border border-slate-200/50 dark:border-slate-700/50 transition p-2 rounded-xl shadow-sm hover:shadow-md z-10"
+                            title="Toggle Section">
+                            <svg id="icon-row-1" xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5 transition-transform duration-300" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
                     </div>
-                </div>
-            </div>
-
-            <div id="test-workspace-header" class="space-y-4">
-                <div class="flex items-center gap-3">
-                    <h2 id="active-test-title" class="text-3xl font-black text-slate-900 dark:text-white leading-tight">
-                    </h2>
-                    <button onclick="openEditTest(activeTestId)"
-                        class="p-2 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition group"
-                        title="Edit Test Details">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 group-hover:scale-110 transition-transform" viewBox="0 0 20 20"
-                            fill="currentColor">
-                            <path
-                                d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                        </svg>
-                    </button>
-                </div>
-
-            </div>
-            <!-- Sticky Top Bar for Sections, Submit, and Filters -->
-            <div
-                class="sticky top-4 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-slate-700/50 p-2 shadow-lg shadow-slate-900/5 space-y-3 transition-all duration-300">
-                <div class="flex items-center justify-between flex-wrap gap-4 px-2">
-                    <div class="flex gap-2 overflow-x-auto pb-1 custom-scrollbar flex-1 no-scrollbar hidden sm:flex"
-                        id="section-tabs">
-                    </div>
-                    <!-- Mobile Section Dropdown -->
-                    <div class="block sm:hidden flex-1">
-                        <select id="section-dropdown" onchange="loadSection(this.value)"
-                            class="w-full px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500">
-                        </select>
-                    </div>
-                    <button onclick="submitAllAttempted()"
-                        class="text-xs bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-4 py-2 rounded-lg font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition whitespace-nowrap uppercase tracking-wide">
-                        Submit Section
-                    </button>
-                    <button id="btn-toggle-pdf" onclick="togglePdfView()"
-                        class="hidden max-sm:hidden text-xs bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-rose-800 px-3 py-2 rounded-lg font-bold hover:bg-rose-100 dark:hover:bg-rose-900/50 transition whitespace-nowrap uppercase tracking-wide gap-1 items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                        </svg>
-                        View PDF
-                    </button>
-                    <button id="btn-view-solutions" onclick="openSolutionPdf()"
-                        class="hidden max-sm:hidden text-xs bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-3 py-2 rounded-lg font-bold hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition whitespace-nowrap uppercase tracking-wide gap-1 items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        Solutions
-                    </button>
-                </div>
-
-                <!-- Sorting/Filters Row -->
-                <div class="flex flex-wrap items-center gap-2 px-2 pb-1">
-                    <span
-                        class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mr-2 flex items-center gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                        </svg>
-                        Filters
-                    </span>
-                    <button onclick="toggleFilter('wrong')" id="filter-wrong"
-                        class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
-                        Wrong
-                    </button>
-                    <button onclick="toggleFilter('unattempted')" id="filter-unattempted"
-                        class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
-                        Unattempted
-                    </button>
-                    <button onclick="toggleFilter('marked')" id="filter-marked"
-                        class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
-                        Marked
-                    </button>
-                    <button onclick="toggleFilter('starred')" id="filter-starred"
-                        class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95 flex items-center gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-amber-500" viewBox="0 0 20 20"
-                            fill="currentColor">
-                            <path
-                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        Starred
-                    </button>
-                    <button onclick="clearFilters()" id="filter-clear"
-                        class="hidden text-[10px] px-3 py-1 rounded-full text-rose-500 font-bold hover:bg-rose-50 dark:hover:bg-rose-900/20 transition ml-auto uppercase tracking-wide">
-                        Reset
-                    </button>
-                </div>
-            </div>
-
-            <div class="flex flex-col lg:flex-row gap-6 relative">
-                <!-- PDF Viewer Container (Hidden by default) -->
-                <div id="pdf-container"
-                    class="hidden lg:w-3/4 h-[calc(100vh-10rem)] sticky top-36 transition-all duration-300">
-                    <div
-                        class="glass h-full rounded-2xl overflow-auto custom-scrollbar shadow-xl border border-slate-200/50 dark:border-slate-700/50 flex flex-col relative group">
-                        <!-- Controls Overlay -->
+                    <section id="row-1-content"
+                        class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start transition-all duration-500 origin-top overflow-hidden">
+                        <!-- Upload Section -->
                         <div
-                            class="absolute top-4 right-4 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <button onclick="zoomPdf(0.2)"
-                                class="p-2 bg-slate-900/80 hover:bg-slate-900 text-white rounded-lg backdrop-blur-sm shadow-lg hover:scale-105 transition">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                            class="glass p-8 rounded-3xl card-shadow text-center relative overflow-hidden group h-full flex flex-col justify-center">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition duration-500">
+                            </div>
+
+                            <div class="relative z-10">
+                                <div
+                                    class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm group-hover:scale-110 transition duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                                <h2 class="text-xl font-bold mb-2 dark:text-white">Add New Test</h2>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm mb-6 max-w-sm mx-auto">Upload a
+                                    JSON answer
+                                    key to create a new practice session.</p>
+
+                                <div class="flex flex-col gap-3 mb-6 w-full">
+                                    <input type="text" id="newTestTitle" placeholder="Test Title"
+                                        class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm">
+                                    <div class="flex gap-2">
+                                        <input type="text" id="newTestSubject" placeholder="Subject"
+                                            class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm">
+                                        <input type="file" id="newTestFile" accept=".json" class="hidden">
+                                        <button onclick="document.getElementById('newTestFile').click()"
+                                            title="Upload File"
+                                            class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-1 whitespace-nowrap">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                            </svg>
+                                            Upload
+                                        </button>
+                                        <button onclick="togglePasteJSON()" title="Paste JSON"
+                                            class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-1 whitespace-nowrap">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                            </svg>
+                                            Paste
+                                        </button>
+                                    </div>
+                                    <div id="pasteJSONContainer"
+                                        class="hidden flex-col gap-2 mt-3 w-full animate-fade-in">
+                                        <textarea id="pasteJSONTextarea" placeholder="Paste your generated JSON here..."
+                                            rows="4"
+                                            class="glass-input w-full px-4 py-3 rounded-xl text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm resize-y"></textarea>
+                                        <button onclick="importPastedJSON()"
+                                            class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-4 py-2 rounded-xl font-bold hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 w-full">Save
+                                            Pasted Test</button>
+                                    </div>
+                                </div>
+
+                                <div class="pt-5 border-t border-slate-200/50 dark:border-slate-700/50">
+                                    <button onclick="copyExtractionPrompt()"
+                                        class="text-xs text-slate-500 dark:text-slate-400 font-semibold hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-2 mx-auto group/btn justify-center">
+                                        <span
+                                            class="group-hover/btn:underline decoration-blue-400/50 underline-offset-4">Copy
+                                            Extraction Prompt</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Daily Checklist -->
+                        <div
+                            class="glass p-8 rounded-3xl card-shadow h-full flex flex-col space-y-5 relative group min-h-[400px]">
+                            <div class="flex items-center justify-between flex-wrap gap-3 mb-2">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center shadow-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                    <h2 class="text-xl font-bold dark:text-white">Daily Checklist</h2>
+                                </div>
+                                <button id="sheets-connect-btn" onclick="handleSheetsAuthClick()"
+                                    class="text-xs bg-white/50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg font-semibold hover:bg-white dark:hover:bg-slate-800 transition whitespace-nowrap backdrop-blur-sm">
+                                    Connect Google Sheets
+                                </button>
+                                <a id="sheets-view-btn"
+                                    href="https://docs.google.com/spreadsheets/d/14XkmLcut2i7fHdcBfw9wH8VXPhsm8U48EsppsUqgdBk/edit"
+                                    target="_blank"
+                                    class="hidden text-xs bg-blue-50 dark:bg-blue-900/20 border border-blue-200/60 dark:border-blue-700/60 text-blue-600 dark:text-blue-400 px-3 py-1.5 rounded-lg font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/40 transition whitespace-nowrap backdrop-blur-sm shadow-sm flex items-center gap-1 ml-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                    View Sheet
+                                </a>
+                            </div>
+
+                            <div id="sheets-status"
+                                class="text-[10px] mb-2 font-medium px-3 py-1.5 rounded-lg bg-amber-50/50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30 inline-block self-start">
+                                Not connected
+                            </div>
+
+                            <!-- Test Given? -->
+                            <div
+                                class="bg-white/50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <label class="text-sm font-bold text-slate-700 dark:text-slate-200">Test
+                                        given?</label>
+                                    <div class="flex gap-2">
+                                        <button id="btn-test-yes" onclick="setDetailedTest(true)"
+                                            class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-colors bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 flex-1">Yes</button>
+                                        <button id="btn-test-no" onclick="setDetailedTest(false)"
+                                            class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-colors bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 flex-1">No</button>
+                                    </div>
+                                </div>
+
+                                <!-- Test Details (Hidden by default) -->
+                                <div id="test-details-container"
+                                    class="hidden flex-col gap-3 pt-3 border-t border-slate-200/50 dark:border-slate-700/50 animate-fade-in">
+                                    <input type="text" id="checklist-test-name" placeholder="Test Name"
+                                        class="glass-input w-full px-3 py-2 rounded-lg text-slate-900 dark:text-white outline-none placeholder:text-slate-400 text-xs">
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div class="space-y-1">
+                                            <label class="text-[10px] uppercase font-bold text-slate-400">Paper 1
+                                                Marks</label>
+                                            <div class="flex items-center gap-1">
+                                                <input type="number" id="checklist-p1-marks"
+                                                    class="glass-input w-full px-3 py-2 rounded-lg text-slate-900 dark:text-white outline-none text-xs"
+                                                    placeholder="Score">
+                                                <span class="text-slate-400 text-xs">/</span>
+                                                <input type="number" id="checklist-p1-total"
+                                                    class="glass-input w-full px-3 py-2 rounded-lg text-slate-900 dark:text-white outline-none text-xs"
+                                                    placeholder="Total">
+                                            </div>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <label class="text-[10px] uppercase font-bold text-slate-400">Paper 2
+                                                Marks</label>
+                                            <div class="flex items-center gap-1">
+                                                <input type="number" id="checklist-p2-marks"
+                                                    class="glass-input w-full px-3 py-2 rounded-lg text-slate-900 dark:text-white outline-none text-xs"
+                                                    placeholder="Score">
+                                                <span class="text-slate-400 text-xs">/</span>
+                                                <input type="number" id="checklist-p2-total"
+                                                    class="glass-input w-full px-3 py-2 rounded-lg text-slate-900 dark:text-white outline-none text-xs"
+                                                    placeholder="Total">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Questions Solved -->
+                            <div class="bg-white/50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 space-y-2 transition-colors duration-300"
+                                id="qs-solved-container">
+                                <div class="flex items-center justify-between">
+                                    <label class="text-sm font-bold text-slate-700 dark:text-slate-200">Questions
+                                        Solved</label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="number" id="checklist-qs-solved" oninput="checkQsGoal()"
+                                            class="glass-input w-16 px-2 py-1.5 rounded-lg text-slate-900 dark:text-white outline-none text-center text-sm font-bold transition-colors">
+                                        <span class="text-xs text-slate-400 font-medium">/ <span
+                                                id="checklist-qs-goal">200</span></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Badminton -->
+                            <div
+                                class="bg-white/50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
+                                <label class="text-sm font-bold text-slate-700 dark:text-slate-200">Played
+                                    Badminton?</label>
+                                <div class="flex gap-2">
+                                    <button id="btn-badminton-yes" onclick="toggleBooleanState('badminton', true)"
+                                        class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-colors bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200">Yes</button>
+                                    <button id="btn-badminton-no" onclick="toggleBooleanState('badminton', false)"
+                                        class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-colors bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200">No</button>
+                                </div>
+                            </div>
+
+                            <!-- Mental Solving -->
+                            <div
+                                class="bg-white/50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
+                                <label class="text-sm font-bold text-slate-700 dark:text-slate-200">Mental
+                                    Solving?</label>
+                                <div class="flex gap-2">
+                                    <button id="btn-mental-yes" onclick="toggleBooleanState('mental', true)"
+                                        class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-colors bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200">Yes</button>
+                                    <button id="btn-mental-no" onclick="toggleBooleanState('mental', false)"
+                                        class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-colors bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200">No</button>
+                                </div>
+                            </div>
+
+                            <button onclick="saveDailyChecklist()" id="save-checklist-btn"
+                                class="mt-auto bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold py-3.5 rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">Save
+                                Today's Progress</button>
+                        </div>
+
+                        <!-- Quick Links Card -->
+                        <div
+                            class="glass p-8 rounded-3xl card-shadow relative overflow-hidden flex flex-col group min-h-[400px]">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition duration-500">
+                            </div>
+
+                            <div class="relative z-10 flex flex-col h-full">
+                                <div class="flex items-center justify-between gap-3 mb-6">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center shadow-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                            </svg>
+                                        </div>
+                                        <h2 class="text-xl font-bold dark:text-white">Quick Links</h2>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span id="quick-links-count"
+                                            class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider bg-white/50 dark:bg-slate-800/50 px-2 py-1 rounded-md">0</span>
+                                        <button onclick="openAddLinkModal()"
+                                            class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-500 transition shadow-sm"
+                                            title="Add Link">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 4v16m8-8H4" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Links List -->
+                                <div id="quick-links-list"
+                                    class="flex-1 space-y-2 overflow-y-auto custom-scrollbar pr-1 max-h-[300px]">
+                                    <!-- Links rendered here -->
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Second Row: Weekly Planner -->
+                    <div class="flex justify-between items-center w-full mt-6 px-2 mb-[-1rem]">
+                        <h3 class="text-xl font-bold text-slate-800 dark:text-slate-200">Weekly Schedule</h3>
+                        <button onclick="toggleRow('row-2')"
+                            class="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 dark:bg-slate-800/50 bg-white/50 border border-slate-200/50 dark:border-slate-700/50 transition p-2 rounded-xl shadow-sm hover:shadow-md z-10"
+                            title="Toggle Section">
+                            <svg id="icon-row-2" xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5 transition-transform duration-300" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
+                    <section id="row-2-content" class="mt-4 transition-all duration-500 origin-top overflow-hidden">
+                        <!-- Weekly Planner -->
+                        <div class="glass p-8 rounded-3xl card-shadow flex flex-col relative min-h-[400px]">
+                            <div class="flex items-center justify-between gap-3 mb-2">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center shadow-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <h2 class="text-xl font-bold dark:text-white">Weekly Planner</h2>
+                                </div>
+                                <button id="tasks-connect-btn" onclick="handlePlannerAuthClick()"
+                                    class="text-xs bg-white/50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg font-semibold hover:bg-white dark:hover:bg-slate-800 transition whitespace-nowrap backdrop-blur-sm">
+                                    Connect Google Tasks
+                                </button>
+                            </div>
+
+                            <div id="planner-status"
+                                class="text-[10px] mb-4 font-medium px-3 py-1.5 rounded-lg bg-amber-50/50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30 inline-block self-start">
+                                Not connected
+                            </div>
+
+                            <!-- 7-Day Horizontal Scroll Container -->
+                            <div id="weekly-planner-container"
+                                class="flex gap-4 overflow-x-auto custom-scrollbar pb-4 flex-1 items-stretch">
+                                <!-- Days injected here via JS -->
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Library Grid -->
+                </main>
+
+                <!-- View: Tests -->
+                <main id="view-tests" class="hidden space-y-8 animate-fade-in pb-10">
+                    <section>
+                        <div class="flex items-center justify-between mb-8">
+                            <h2
+                                class="text-3xl font-black flex items-center gap-3 bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">
+                                My Tests
+                                <span id="test-count"
+                                    class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 text-slate-500 dark:text-slate-400 text-sm px-3 py-1 rounded-full font-bold shadow-sm">0</span>
+                            </h2>
+
+                            <!-- Search/Filter Placeholder -->
+                            <div class="hidden sm:flex items-center gap-2">
+                                <div class="relative group">
+                                    <input type="text" id="search-input" placeholder="Search tests..."
+                                        oninput="handleSearch(this.value)"
+                                        class="glass-input px-4 py-2 rounded-xl text-sm w-48 focus:w-64 transition-all duration-300 pl-10 text-slate-700 dark:text-slate-200 placeholder:text-slate-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="test-library" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Cards injected here -->
+                        </div>
+                    </section>
+                </main>
+
+                <!-- View: Analysis -->
+                <main id="view-analysis" class="hidden space-y-8 animate-fade-in pb-10">
+                    <div class="flex items-center justify-between mb-8">
+                        <h2
+                            class="text-3xl font-black flex items-center gap-3 bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">
+                            Analysis
+                        </h2>
+                    </div>
+
+                    <!-- Overall Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="glass p-6 rounded-3xl card-shadow relative overflow-hidden group">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition duration-500">
+                            </div>
+                            <div class="relative z-10">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div
+                                        class="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center shadow-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                    </div>
+                                    <h3
+                                        class="font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs">
+                                        Total Tests</h3>
+                                </div>
+                                <p id="analysis-total-tests" class="text-4xl font-black text-slate-900 dark:text-white">
+                                    0</p>
+                            </div>
+                        </div>
+
+                        <div class="glass p-6 rounded-3xl card-shadow relative overflow-hidden group">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition duration-500">
+                            </div>
+                            <div class="relative z-10">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div
+                                        class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center shadow-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                        </svg>
+                                    </div>
+                                    <h3
+                                        class="font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs">
+                                        Overall Accuracy</h3>
+                                </div>
+                                <p id="analysis-accuracy"
+                                    class="text-4xl font-black text-emerald-600 dark:text-emerald-400">0%</p>
+                            </div>
+                        </div>
+
+                        <div class="glass p-6 rounded-3xl card-shadow relative overflow-hidden group">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition duration-500">
+                            </div>
+                            <div class="relative z-10">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div
+                                        class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center shadow-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+                                        </svg>
+                                    </div>
+                                    <h3
+                                        class="font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs">
+                                        Questions Solved</h3>
+                                </div>
+                                <p id="analysis-qs-solved" class="text-4xl font-black text-slate-900 dark:text-white">0
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="glass p-6 rounded-3xl card-shadow relative overflow-hidden group">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition duration-500">
+                            </div>
+                            <div class="relative z-10">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div
+                                        class="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center shadow-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <h3
+                                        class="font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs">
+                                        Time Spent</h3>
+                                </div>
+                                <p id="analysis-time-spent" class="text-4xl font-black text-slate-900 dark:text-white">
+                                    0h 0m</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subject wise Breakdown -->
+                    <div class="glass p-8 rounded-3xl card-shadow">
+                        <h3 class="text-xl font-bold dark:text-white mb-6">Subject Progress</h3>
+                        <div id="analysis-subject-breakdown" class="space-y-6">
+                            <!-- Subject rows injected here -->
+                        </div>
+                    </div>
+                </main>
+
+                <!-- View: Test Workspace -->
+                <main id="view-test" class="hidden space-y-6 animate-fade-in relative pb-10">
+                    <div class="flex flex-wrap justify-between items-center gap-4 mb-2">
+                        <button onclick="goTests()"
+                            class="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition group px-3 py-2 rounded-xl hover:bg-white/50 dark:hover:bg-slate-800/50">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5 group-hover:-translate-x-1 transition-transform" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            Back to Library
+                        </button>
+                        <div class="flex items-center gap-3">
+                            <!-- Removed timer from here to place in global header -->
+
+                            <div class="flex items-center gap-2">
+                                <button onclick="openKeyViewer(activeTestId)"
+                                    class="p-2 rounded-xl bg-white/60 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 text-slate-500 dark:text-slate-400 transition"
+                                    title="View answer key">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </button>
+                                <button onclick="exportSingleTest(activeTestId)"
+                                    class="p-2 rounded-xl bg-white/60 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 text-slate-500 dark:text-slate-400 transition"
+                                    title="Export">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                </button>
+                                <button onclick="showReport()"
+                                    class="p-2 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-900/50 transition font-bold flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="test-workspace-header" class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <h2 id="active-test-title"
+                                class="text-3xl font-black text-slate-900 dark:text-white leading-tight">
+                            </h2>
+                            <button onclick="openEditTest(activeTestId)"
+                                class="p-2 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition group"
+                                title="Edit Test Details">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5 group-hover:scale-110 transition-transform" viewBox="0 0 20 20"
                                     fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                                        clip-rule="evenodd" />
+                                    <path
+                                        d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                 </svg>
                             </button>
-                            <button onclick="zoomPdf(-0.2)"
-                                class="p-2 bg-slate-900/80 hover:bg-slate-900 text-white rounded-lg backdrop-blur-sm shadow-lg hover:scale-105 transition">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                    fill="currentColor">
-                                    <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z"
-                                        clip-rule="evenodd" />
-                                </svg>
+                        </div>
+
+                    </div>
+                    <!-- Sticky Top Bar for Sections, Submit, and Filters -->
+                    <div
+                        class="sticky top-4 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-slate-700/50 p-2 shadow-lg shadow-slate-900/5 space-y-3 transition-all duration-300">
+                        <div class="flex items-center justify-between flex-wrap gap-4 px-2">
+                            <div class="flex gap-2 overflow-x-auto pb-1 custom-scrollbar flex-1 no-scrollbar hidden sm:flex"
+                                id="section-tabs">
+                            </div>
+                            <!-- Mobile Section Dropdown -->
+                            <div class="block sm:hidden flex-1">
+                                <select id="section-dropdown" onchange="loadSection(this.value)"
+                                    class="w-full px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500">
+                                </select>
+                            </div>
+
+                            <!-- Goals and Timer Info -->
+                            <div id="timer-display-area" class="flex items-center gap-3">
+                                <div id="active-goal-stats"
+                                    class="hidden items-center gap-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-lg">
+                                    Goal: <span id="display-goal-num">0</span> Qs
+                                </div>
+                                <div
+                                    class="flex items-center bg-white/50 dark:bg-slate-800/50 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 rounded-lg overflow-hidden h-9 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
+                                    <div id="timer-box"
+                                        class="flex items-center gap-2 px-3 py-1 text-slate-700 dark:text-slate-200 font-mono text-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition border-r border-slate-200/50 dark:border-slate-700/50"
+                                        onclick="openTimerSettings()" title="Timer Settings">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span id="test-timer" class="font-bold tracking-wider">00:00:00</span>
+                                    </div>
+                                    <button id="timer-toggle-btn" onclick="toggleTimer()"
+                                        class="px-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition text-slate-600 dark:text-slate-400 h-full flex items-center justify-center"
+                                        title="Start/Stop Timer">
+                                        <svg id="timer-play-icon" xmlns="http://www.w3.org/2000/svg"
+                                            class="h-5 w-5 text-emerald-500" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        <svg id="timer-stop-icon" xmlns="http://www.w3.org/2000/svg"
+                                            class="h-5 w-5 hidden text-amber-500" viewBox="0 0 20 20"
+                                            fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <button onclick="submitAllAttempted()"
+                                class="text-xs bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-4 py-2 rounded-lg font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition whitespace-nowrap uppercase tracking-wide">
+                                Submit Section
                             </button>
-                            <button onclick="togglePdfView()"
-                                class="p-2 bg-rose-500/80 hover:bg-rose-600 text-white rounded-lg backdrop-blur-sm shadow-lg hover:scale-105 transition">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            <button id="btn-toggle-pdf" onclick="togglePdfView()"
+                                class="hidden max-sm:hidden text-xs bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-rose-800 px-3 py-2 rounded-lg font-bold hover:bg-rose-100 dark:hover:bg-rose-900/50 transition whitespace-nowrap uppercase tracking-wide gap-1 items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12" />
+                                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                 </svg>
+                                View PDF
+                            </button>
+                            <button id="btn-view-solutions" onclick="openSolutionPdf()"
+                                class="hidden max-sm:hidden text-xs bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-3 py-2 rounded-lg font-bold hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition whitespace-nowrap uppercase tracking-wide gap-1 items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Solutions
                             </button>
                         </div>
-                        <iframe id="pdf-frame" class="w-full h-full bg-slate-50 dark:bg-slate-900" src=""
-                            frameborder="0" allow="autoplay">
-                        </iframe>
-                        <div id="pdf-placeholder"
-                            class="hidden absolute inset-0 flex items-center justify-center bg-slate-50 dark:bg-slate-800 text-slate-400">
-                            <p class="text-sm">No PDF assigned</p>
+
+                        <!-- Sorting/Filters Row -->
+                        <div class="flex flex-wrap items-center gap-2 px-2 pb-1">
+                            <span
+                                class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mr-2 flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                                </svg>
+                                Filters
+                            </span>
+                            <button onclick="toggleFilter('wrong')" id="filter-wrong"
+                                class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
+                                Wrong
+                            </button>
+                            <button onclick="toggleFilter('unattempted')" id="filter-unattempted"
+                                class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
+                                Unattempted
+                            </button>
+                            <button onclick="toggleFilter('marked')" id="filter-marked"
+                                class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
+                                Marked
+                            </button>
+                            <button onclick="toggleFilter('starred')" id="filter-starred"
+                                class="text-[11px] px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95 flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-amber-500"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path
+                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                                Starred
+                            </button>
+                            <button onclick="clearFilters()" id="filter-clear"
+                                class="hidden text-[10px] px-3 py-1 rounded-full text-rose-500 font-bold hover:bg-rose-50 dark:hover:bg-rose-900/20 transition ml-auto uppercase tracking-wide">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col lg:flex-row gap-6 relative">
+                        <!-- PDF Viewer Container (Hidden by default) -->
+                        <div id="pdf-container"
+                            class="hidden lg:w-3/4 h-[calc(100vh-10rem)] sticky top-36 transition-all duration-300">
+                            <div
+                                class="glass h-full rounded-2xl overflow-auto custom-scrollbar shadow-xl border border-slate-200/50 dark:border-slate-700/50 flex flex-col relative group">
+                                <!-- Controls Overlay -->
+                                <div
+                                    class="absolute top-4 right-4 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <button onclick="zoomPdf(0.2)"
+                                        class="p-2 bg-slate-900/80 hover:bg-slate-900 text-white rounded-lg backdrop-blur-sm shadow-lg hover:scale-105 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                            fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                    <button onclick="zoomPdf(-0.2)"
+                                        class="p-2 bg-slate-900/80 hover:bg-slate-900 text-white rounded-lg backdrop-blur-sm shadow-lg hover:scale-105 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                            fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                    <button onclick="togglePdfView()"
+                                        class="p-2 bg-rose-500/80 hover:bg-rose-600 text-white rounded-lg backdrop-blur-sm shadow-lg hover:scale-105 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <iframe id="pdf-frame" class="w-full h-full bg-slate-50 dark:bg-slate-900" src=""
+                                    frameborder="0" allow="autoplay">
+                                </iframe>
+                                <div id="pdf-placeholder"
+                                    class="hidden absolute inset-0 flex items-center justify-center bg-slate-50 dark:bg-slate-800 text-slate-400">
+                                    <p class="text-sm">No PDF assigned</p>
+                                </div>
+
+                                <!-- View Solutions Button -->
+
+                            </div>
                         </div>
 
-                        <!-- View Solutions Button -->
-
+                        <!-- Questions Grid -->
+                        <div id="question-grid-container" class="w-full transition-all duration-300">
+                            <div id="question-grid"
+                                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 pb-20">
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Questions Grid -->
-                <div id="question-grid-container" class="w-full transition-all duration-300">
-                    <div id="question-grid"
-                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 pb-20">
-                    </div>
-                </div>
+                </main>
             </div>
-        </main>
+        </div>
     </div>
 
     <!-- Modals -->
